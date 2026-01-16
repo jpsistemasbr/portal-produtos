@@ -5,6 +5,7 @@ const itemGrid = document.getElementById("itemGrid");
 const promotionList = document.getElementById("promotionList");
 const catalogFilters = document.getElementById("catalogFilters");
 const leadTable = document.getElementById("leadTable");
+const leadList = document.getElementById("leadList");
 const leadDeleteAll = document.getElementById("leadDeleteAll");
 const eventTable = document.getElementById("eventTable");
 const eventDeleteAll = document.getElementById("eventDeleteAll");
@@ -343,7 +344,6 @@ function applyOrderFilters(orders) {
 }
 
 async function loadReports() {
-  if (!leadTable || !eventTable) return;
   const [leadsRes, eventsRes, metricsRes, ordersRes] = await Promise.all([
     axios.get("/api/leads"),
     axios.get("/api/events/grouped"),
@@ -352,20 +352,44 @@ async function loadReports() {
   ]);
 
   const leads = leadsRes.data || [];
-  leadTable.innerHTML = leads
-    .map(
-      (lead) => `
-        <tr>
-          <td>${lead.name}</td>
-          <td>${lead.email}</td>
-          <td>${lead.phone || "-"}</td>
-          <td>
-            <button class="btn btn-outline-danger btn-sm" data-action="delete-lead" data-id="${lead.id}">Excluir</button>
-          </td>
-        </tr>
-      `
-    )
-    .join("");
+  if (leadTable) {
+    leadTable.innerHTML = leads
+      .map(
+        (lead) => `
+          <tr>
+            <td>${lead.name}</td>
+            <td>${lead.email}</td>
+            <td>${lead.phone || "-"}</td>
+            <td>
+              <button class="btn btn-outline-danger btn-sm" data-action="delete-lead" data-id="${lead.id}">Excluir</button>
+            </td>
+          </tr>
+        `
+      )
+      .join("");
+  }
+  if (leadList) {
+    if (!leads.length) {
+      leadList.innerHTML = '<div class="text-secondary small">Nenhum lead capturado.</div>';
+    } else {
+      leadList.innerHTML = leads
+        .map(
+          (lead) => `
+            <div class="d-flex justify-content-between align-items-start border border-secondary rounded-3 p-3 mb-2">
+              <div>
+                <div class="fw-semibold">${lead.name || "Lead sem nome"}</div>
+                <div class="text-secondary small">${lead.email || "-"}</div>
+                <div class="text-secondary small">${lead.phone || "-"}</div>
+              </div>
+              <button class="btn btn-outline-danger btn-sm" data-action="delete-lead" data-id="${lead.id}">
+                Excluir
+              </button>
+            </div>
+          `
+        )
+        .join("");
+    }
+  }
 
   const events = eventsRes.data || [];
   const filterName = (eventFilterName?.value || "").trim().toLowerCase();
@@ -377,28 +401,30 @@ async function loadReports() {
     const deviceMatch = !filterDevice || evt.device === filterDevice;
     return nameMatch && typeMatch && deviceMatch;
   });
-  eventTable.innerHTML = filteredEvents
-    .map(
-      (evt) => `
-        <tr>
-          <td>${evt.eventName}</td>
-          <td>${evt.itemType}</td>
-          <td>${evt.itemId}</td>
-          <td>${evt.device}</td>
-          <td>${evt.total}</td>
-          <td>
-            <button class="btn btn-outline-danger btn-sm"
-              data-action="delete-event"
-              data-event-name="${evt.eventName}"
-              data-item-type="${evt.itemType}"
-              data-item-id="${evt.itemId}">
-              Excluir
-            </button>
-          </td>
-        </tr>
-      `
-    )
-    .join("");
+  if (eventTable) {
+    eventTable.innerHTML = filteredEvents
+      .map(
+        (evt) => `
+          <tr>
+            <td>${evt.eventName}</td>
+            <td>${evt.itemType}</td>
+            <td>${evt.itemId}</td>
+            <td>${evt.device}</td>
+            <td>${evt.total}</td>
+            <td>
+              <button class="btn btn-outline-danger btn-sm"
+                data-action="delete-event"
+                data-event-name="${evt.eventName}"
+                data-item-type="${evt.itemType}"
+                data-item-id="${evt.itemId}">
+                Excluir
+              </button>
+            </td>
+          </tr>
+        `
+      )
+      .join("");
+  }
 
   const metrics = metricsRes.data || {};
   if (visitCount) visitCount.textContent = metrics.visits || 0;
@@ -748,6 +774,16 @@ function setStatus(el, message, tone) {
 }
 if (leadTable) {
   leadTable.addEventListener("click", async (event) => {
+    const button = event.target.closest("button[data-action='delete-lead']");
+    if (!button) return;
+    const id = button.getAttribute("data-id");
+    if (!id) return;
+    await axios.delete(`/api/leads/${id}`);
+    loadReports();
+  });
+}
+if (leadList) {
+  leadList.addEventListener("click", async (event) => {
     const button = event.target.closest("button[data-action='delete-lead']");
     if (!button) return;
     const id = button.getAttribute("data-id");
