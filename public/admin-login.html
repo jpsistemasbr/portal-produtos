@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin - Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="admin-page admin-login">
+    <div class="bg-glow"></div>
+    <main class="login-shell">
+      <div class="login-card">
+        <div class="login-header">
+          <span class="brand-mark">Portal</span>
+          <h1>Login do Admin</h1>
+          <p>Entre para gerenciar produtos, promocoes e pedidos.</p>
+        </div>
+        <form id="adminLoginForm" class="login-form">
+          <label>
+            Email
+            <input type="email" name="email" required placeholder="admin@catalogo.com" />
+          </label>
+          <label>
+            Senha
+            <input type="password" name="password" required placeholder="Digite sua senha" />
+          </label>
+          <button class="btn primary" type="submit">Entrar no painel</button>
+          <div id="loginStatus" class="form-status" role="status"></div>
+        </form>
+      </div>
+    </main>
+    <script src="admin-login.js"></script>
+  </body>
+</html>

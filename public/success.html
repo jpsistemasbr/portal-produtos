@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Status do pagamento</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="bg-glow"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-orb"></div>
+    <header class="site-header">
+      <div class="brand">
+        <span class="brand-mark" data-portal-brand>Portal</span>
+        <span data-portal-name>Produtos</span>
+      </div>
+      <nav class="nav">
+        <a href="/">Catálogo</a>
+      </nav>
+      <a class="btn ghost" href="/">Voltar</a>
+    </header>
+
+    <main>
+      <section class="section success-page">
+        <div class="section-head">
+          <h2 id="successTitle">Status do pagamento</h2>
+          <p id="successMessage">Acompanhe abaixo o status da sua compra.</p>
+        </div>
+        <div class="detail-grid">
+          <div class="detail-card">
+            <h3>Detalhes do pedido</h3>
+            <div class="success-info" id="successInfo"></div>
+          </div>
+          <div class="detail-card">
+            <h3>Precisa de ajuda?</h3>
+            <p id="supportInfo"></p>
+            <div class="hero-actions">
+              <a class="btn primary" href="/">Voltar ao catálogo</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.7.2/dist/axios.min.js"></script>
+  <script src="/analytics.js"></script>
+  <script src="/success.js"></script>
+  </body>
+</html>

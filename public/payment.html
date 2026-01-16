@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pagamento</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="bg-glow"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-orb"></div>
+    <header class="site-header">
+      <div class="brand">
+        <span class="brand-mark" data-portal-brand>Portal</span>
+        <span data-portal-name>Produtos</span>
+      </div>
+      <nav class="nav">
+        <a href="/">Catalogo</a>
+      </nav>
+      <a class="btn ghost" href="/">Voltar</a>
+    </header>
+
+    <main>
+      <section class="section payment-page">
+        <div class="section-head">
+          <p class="tag">Pagamento seguro</p>
+          <h2>Finalize sua compra</h2>
+          <p class="subtitle">Confirme seus dados e escolha PIX ou cartao.</p>
+        </div>
+        <div class="detail-grid">
+          <div class="detail-card detail-media">
+            <img id="paymentImage" alt="" />
+            <div class="detail-content">
+              <h3 id="paymentTitle">Carregando...</h3>
+              <p id="paymentDescription" class="detail-description"></p>
+              <div id="basketSummary" class="basket-summary" style="display:none;">
+                <div class="basket-summary-header">
+                  <h4>Itens na cesta</h4>
+                  <span id="basketCountLabel">0 itens</span>
+                </div>
+                <div id="basketSummaryList" class="basket-summary-list"></div>
+                <div class="basket-summary-total">
+                  <span>Total</span>
+                  <strong id="basketSummaryTotal">R$ 0,00</strong>
+                </div>
+              </div>
+              <div class="price-row">
+                <span id="paymentOldPrice" class="price-old"></span>
+                <span id="paymentNewPrice" class="price-new"></span>
+              </div>
+              <div class="trust-chips">
+                <span class="trust-chip">Pagamento criptografado</span>
+                <span class="trust-chip">Confirmacao por email</span>
+                <span class="trust-chip">Suporte humano</span>
+              </div>
+              <div id="marketplaceNotice" class="marketplace-note" style="display:none;">
+                <h4>Marketplace</h4>
+                <p>Vendemos este item tambem atraves de outros canais.</p>
+                <div id="marketplaceLinks" class="marketplace-links"></div>
+              </div>
+            </div>
+          </div>
+          <div class="detail-card detail-panel">
+            <label>
+              Email para comprovante
+              <input id="payerEmail" type="email" placeholder="voce@email.com" required />
+            </label>
+            <label>
+              WhatsApp/Contato
+              <input id="payerPhone" type="tel" placeholder="(00) 00000-0000" required />
+            </label>
+            <div id="shippingBlock" class="shipping-block" style="display:none;">
+              <h4>Endereco de entrega</h4>
+              <div class="shipping-grid">
+                <label>
+                  Nome completo
+                  <input id="shippingName" type="text" placeholder="Nome do destinatario" />
+                </label>
+                <label>
+                  CEP
+                  <input id="shippingPostalCode" type="text" placeholder="00000-000" />
+                </label>
+                <label>
+                  Rua
+                  <input id="shippingStreet" type="text" placeholder="Rua / Avenida" />
+                </label>
+                <label>
+                  Numero
+                  <input id="shippingNumber" type="text" placeholder="Numero" />
+                </label>
+                <label>
+                  Complemento
+                  <input id="shippingComplement" type="text" placeholder="Apartamento, bloco, etc." />
+                </label>
+                <label>
+                  Bairro
+                  <input id="shippingDistrict" type="text" placeholder="Bairro" />
+                </label>
+                <label>
+                  Cidade
+                  <input id="shippingCity" type="text" placeholder="Cidade" />
+                </label>
+                <label>
+                  Estado
+                  <input id="shippingState" type="text" placeholder="Estado" />
+                </label>
+              </div>
+            </div>
+
+            <div class="hero-actions">
+              <button id="payPix" class="btn primary">Gerar PIX</button>
+              <button id="payCard" class="btn ghost">Pagar no cartao</button>
+            </div>
+            <div id="paymentStatus" class="status-message"></div>
+            <a id="paymentStatusLink" class="btn ghost status-link" href="#" style="display:none;">
+              Ver status do pagamento
+            </a>
+            <div id="pixResult" class="pix-result">
+              <img id="pixImage" alt="QR Code PIX" />
+              <div class="pix-code">
+                <input id="pixCode" type="text" readonly />
+                <button id="pixCopy" class="btn ghost">Copiar PIX</button>
+              </div>
+              <a id="pixLink" class="btn ghost" href="#" target="_blank" style="display:none;">Abrir link do pagamento</a>
+            </div>
+            <div class="cta-stack">
+              <a id="successLink" class="btn ghost" href="#" style="display:none;">Compra confirmada</a>
+            </div>
+            <div id="cardBrick" class="card-brick">
+              <div id="card-payment-brick"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.7.2/dist/axios.min.js"></script>
+  <script src="/analytics.js"></script>
+  <script src="/payment.js"></script>
+  </body>
+</html>

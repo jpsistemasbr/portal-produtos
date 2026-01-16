@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Detalhes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="bg-glow"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-orb"></div>
+    <header class="site-header">
+      <div class="brand">
+        <span class="brand-mark" data-portal-brand>Portal</span>
+        <span data-portal-name>Produtos</span>
+      </div>
+      <nav class="nav">
+        <a href="/">Catálogo</a>
+      </nav>
+      <a class="btn ghost" href="/">Voltar</a>
+    </header>
+
+    <main>
+      <section class="section detail-page">
+        <div class="section-head">
+          <p class="tag">Detalhes do item</p>
+          <h2 id="detailTitle">Carregando...</h2>
+          <p id="detailSubtitle" class="subtitle">Analise todas as informações antes de comprar.</p>
+        </div>
+        <div class="detail-grid">
+          <div class="detail-card detail-media">
+            <img id="detailImage" alt="" />
+            <div class="detail-content">
+              <p id="detailDescription" class="detail-description"></p>
+              <div class="price-row">
+                <span id="detailOldPrice" class="price-old"></span>
+                <span id="detailNewPrice" class="price-new"></span>
+              </div>
+              <div id="detailVideo" class="detail-video" style="display:none;">
+                <iframe id="detailVideoFrame" title="Video do produto" loading="lazy" allowfullscreen></iframe>
+              </div>
+              <div id="marketplaceNotice" class="marketplace-note" style="display:none;">
+                <h4>Marketplace</h4>
+                <p>Vendemos este item tambem atraves de outros canais.</p>
+                <div id="marketplaceLinks" class="marketplace-links"></div>
+              </div>
+              <div id="detailLinks" class="hero-actions"></div>
+              <div class="trust-chips">
+                <span class="trust-chip">Entrega digital rápida</span>
+                <span class="trust-chip">Suporte humano</span>
+                <span class="trust-chip">Garantia</span>
+              </div>
+            </div>
+          </div>
+          <div class="detail-card detail-panel">
+            <div class="detail-tabs">
+              <button class="tab-btn active" data-tab="resumo">Resumo</button>
+              <button class="tab-btn" data-tab="pagamento">Pagamento</button>
+            </div>
+            <div class="tab-panel active" data-panel="resumo">
+              <ul class="detail-list" id="detailHighlights"></ul>
+              <div class="cta-stack">
+                <a id="goPayment" class="btn primary" href="#">Comprar agora</a>
+                <a class="btn ghost" href="/">Voltar ao catálogo</a>
+              </div>
+            </div>
+            <div class="tab-panel" data-panel="pagamento">
+              <p class="subtitle">Escolha a melhor forma de pagamento.</p>
+              <div class="cta-stack">
+                <a class="btn primary go-payment" href="#">Ir para pagamento</a>
+                <a class="btn ghost" href="/">Voltar ao catálogo</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.7.2/dist/axios.min.js"></script>
+  <script src="/analytics.js"></script>
+  <script src="/detail.js"></script>
+  </body>
+</html>
