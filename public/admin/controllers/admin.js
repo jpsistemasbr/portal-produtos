@@ -994,6 +994,7 @@ async function loadConfig() {
   if (mpLiveAlert) {
     const token = String(data.mpAccessToken || "");
     const hasTestPayer = Boolean(data.testPayerEmail);
+    const testPayerEmail = data.testPayerEmail || "";
     const envMode = String(data.mpEnv || "").toUpperCase();
     const isTestToken = token && token.startsWith("TEST-");
     const isTestEmail =

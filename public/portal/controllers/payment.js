@@ -226,10 +226,25 @@ function showStatusLink(href) {
   if (!href) {
     paymentStatusLink.style.display = "none";
     paymentStatusLink.href = "#";
+    paymentStatusLink.textContent = "Ver status do pagamento";
     return;
   }
   paymentStatusLink.href = href;
   paymentStatusLink.style.display = "inline-flex";
+}
+
+function buildSalesContactLink() {
+  if (!portalConfig) return "";
+  const whatsapp = String(portalConfig.supportWhatsApp || "").trim();
+  if (whatsapp) {
+    const digits = whatsapp.replace(/\D/g, "");
+    if (digits) return `https://wa.me/55${digits}`;
+  }
+  const email = String(portalConfig.supportEmail || "").trim();
+  if (email) {
+    return `mailto:${email}`;
+  }
+  return "";
 }
 
 function buildStatusUrl(orderId) {
@@ -369,7 +384,7 @@ async function loadPortalConfig() {
       window.location.href = "/";
     }
     if (payCard && data?.mpEnabled === false) {
-      payCard.disabled = true;
+      payCard.dataset.unavailable = "1";
       payCard.classList.add("disabled");
     }
     if (cardBrick && data?.mpEnabled === false) {
@@ -605,7 +620,15 @@ async function loadItem() {
       }
 
       if (data.source === "local") {
-        showPaymentMessage("PIX do lojista pronto. Use o QR ou copie a chave.", "success");
+        showPaymentMessage(
+          "PIX do lojista pronto. Envie o comprovante ao contato de vendas para confirmarmos o pedido.",
+          "success"
+        );
+        const contactLink = buildSalesContactLink();
+        if (contactLink) {
+          if (paymentStatusLink) paymentStatusLink.textContent = "Falar com vendas";
+          showStatusLink(contactLink);
+        }
       } else {
         showPaymentMessage(
           "Apos o pagamento, aguarde a confirmacao ou envie o comprovante para nosso contato.",
@@ -653,6 +676,13 @@ async function loadItem() {
 
 if (payCard) {
   payCard.addEventListener("click", async () => {
+    if (portalConfig?.mpEnabled === false) {
+      showPaymentMessage(
+        "Para pagar no cartão, fale com a nossa equipe e utilize a maquininha do lojista. Estamos prontos para ajudar.",
+        "warning"
+      );
+      return;
+    }
     if (!selectedItem && !selectedItems.length) return;
     if (!validatePayerFields()) return;
     if (!validateShippingFields()) return;

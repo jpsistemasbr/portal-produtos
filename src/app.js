@@ -13,6 +13,8 @@ app.use(express.json({ limit: "200kb" }));
 app.use(express.urlencoded({ extended: true }));
 
 const publicDir = path.join(__dirname, "..", "public");
+const portalViewsDir = path.join(publicDir, "portal", "views");
+const adminViewsDir = path.join(publicDir, "admin", "views");
 
 function detectDevice(userAgent) {
   const ua = (userAgent || "").toLowerCase();
@@ -38,7 +40,7 @@ async function logPageView(req, res, fileName = "index.html") {
   } catch (err) {
     // fail silent
   }
-  res.sendFile(path.join(publicDir, fileName));
+  res.sendFile(path.join(portalViewsDir, fileName));
 }
 
 app.get("/", (req, res) => logPageView(req, res, "index.html"));
@@ -97,10 +99,10 @@ app.get("/status-pagamento/pedido/:id", (req, res) => {
   return logPageView(req, res, "success.html");
 });
 app.get("/admin", (_req, res) => {
-  res.sendFile(path.join(publicDir, "admin.html"));
+  res.sendFile(path.join(adminViewsDir, "admin.html"));
 });
 app.get("/admin-login", (_req, res) => {
-  res.sendFile(path.join(publicDir, "admin-login.html"));
+  res.sendFile(path.join(adminViewsDir, "admin-login.html"));
 });
 
 app.use(express.static(publicDir));

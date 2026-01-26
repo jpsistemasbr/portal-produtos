@@ -322,6 +322,10 @@ main {
   flex-wrap: wrap;
 }
 
+.payment-page .hero-actions {
+  justify-content: center;
+}
+
 .card:hover {
   transform: translateY(-4px);
   box-shadow: 0 26px 60px rgba(5, 10, 20, 0.45);
@@ -756,6 +760,7 @@ main {
   padding: 10px;
   color: var(--text);
   font-size: 12px;
+  text-align: center;
 }
 
 .success-info {
@@ -1298,9 +1303,9 @@ main {
 }
 
 .admin-modal {
-  background: #f5f7fa;
+  background: #ffffff;
   border: 1px solid #d5dde7;
-  color: #1b2636;
+  color: #001d47;
 }
 
 .admin-modal .modal-header {
@@ -1325,7 +1330,7 @@ main {
 }
 
 .admin-modal .text-white {
-  color: #1b2636 !important;
+  color: #361b1b !important;
 }
 
 .admin-status {

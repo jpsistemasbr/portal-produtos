@@ -625,6 +625,8 @@ if (basketList) {
     const id = button.getAttribute("data-id");
     const type = button.getAttribute("data-type");
     if (!id || !type) return;
+    const itemType = type;
+    const itemId = id;
     const items = getBasketItems();
     const index = items.findIndex(
       (item) => String(item.itemId) === String(id) && item.itemType === type
