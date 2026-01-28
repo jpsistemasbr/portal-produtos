@@ -21,10 +21,15 @@
         <span class="brand-mark" data-portal-brand>Portal</span>
         <span data-portal-name>Produtos</span>
       </div>
-      <nav class="nav">
+      <button class="btn ghost nav-toggle" type="button" aria-expanded="false" aria-controls="siteNav">
+        Menu
+      </button>
+      <nav id="siteNav" class="nav">
         <a href="/">Catalogo</a>
       </nav>
-      <a class="btn ghost" href="/">Voltar</a>
+      <div class="nav-actions">
+        <a class="btn ghost" href="/">Voltar</a>
+      </div>
     </header>
 
     <main>
@@ -142,7 +147,8 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/axios@1.7.2/dist/axios.min.js"></script>
-  <script src="/shared/js/analytics.js"></script>
-  <script src="/portal/controllers/payment.js"></script>
+    <script src="/shared/js/analytics.js"></script>
+    <script src="/shared/js/nav.js"></script>
+    <script src="/portal/controllers/payment.js"></script>
   </body>
 </html>
