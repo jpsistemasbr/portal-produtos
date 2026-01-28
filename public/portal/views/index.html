@@ -1,167 +1,189 @@
 <!doctype html>
 <html lang="pt-br">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Portal Produtos</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="/shared/css/styles.css" />
-  </head>
-  <body>
-    <div class="bg-glow"></div>
-    <div class="bg-grid"></div>
-    <div class="bg-orb"></div>
-    <header class="site-header">
-      <div class="brand">
-        <span class="brand-mark" data-portal-brand>Portal</span>
-        <span data-portal-name>Produtos</span>
-      </div>
-      <button class="btn ghost nav-toggle" type="button" aria-expanded="false" aria-controls="siteNav">
-        Menu
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal Produtos</title>
+  <meta name="description" content="Portal de produtos e serviços com ofertas, promoções e checkout seguro."
+    id="metaDescription" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://portal.jpsisemasbr.com.br/" id="canonicalUrl" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Portal Produtos" id="ogTitle" />
+  <meta property="og:description" content="Portal de produtos e serviços com ofertas, promoções e checkout seguro."
+    id="ogDescription" />
+  <meta property="og:url" content="https://portal.jpsisemasbr.com.br/" id="ogUrl" />
+  <meta property="og:site_name" content="Portal Produtos" id="ogSiteName" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Portal Produtos" id="twitterTitle" />
+  <meta name="twitter:description" content="Portal de produtos e serviços com ofertas, promoções e checkout seguro."
+    id="twitterDescription" />
+  <script type="application/ld+json" id="seoSchema">
+      {"@context":"https://schema.org","@type":"WebSite","name":"Portal Produtos","url":"https://portal.jpsisemasbr.com.br/","potentialAction":{"@type":"SearchAction","target":"https://portal.jpsisemasbr.com.br/?q={search_term_string}","query-input":"required name=search_term_string"}}
+    </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/shared/css/styles.css" />
+</head>
+
+<body>
+  <div class="bg-glow"></div>
+  <div class="bg-grid"></div>
+  <div class="bg-orb"></div>
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-mark" data-portal-brand>Portal</span>
+      <span data-portal-name>Produtos</span>
+    </div>
+    <button class="btn ghost nav-toggle" type="button" aria-expanded="false" aria-controls="siteNav">
+      Menu
+    </button>
+    <nav id="siteNav" class="nav">
+      <a href="/#produtos" data-nav="products">Produtos</a>
+      <a href="/#servicos" data-nav="services">Serviços</a>
+      <a href="/#promocoes" data-nav="promotions">Promoções</a>
+      <a href="/#contato" data-nav="contact">Contato</a>
+    </nav>
+    <div class="nav-actions">
+      <button id="basketToggle" class="btn ghost basket-btn" type="button">
+        Cesta <span id="basketCount">0</span>
       </button>
-      <nav id="siteNav" class="nav">
-        <a href="/#produtos" data-nav="products">Produtos</a>
-        <a href="/#servicos" data-nav="services">Serviços</a>
-        <a href="/#promocoes" data-nav="promotions">Promoções</a>
-        <a href="/#contato" data-nav="contact">Contato</a>
-      </nav>
-      <div class="nav-actions">
-        <button id="basketToggle" class="btn ghost basket-btn" type="button">
-          Cesta <span id="basketCount">0</span>
-        </button>
-        <a class="btn primary" href="/#produtos">Ver ofertas</a>
+      <a class="btn primary" href="/#produtos">Ver ofertas</a>
+    </div>
+  </header>
+
+  <main>
+    <section id="promocoes" class="section promo-band" data-section="promotions">
+      <div>
+        <h2 data-promo-band-title>Destaques da semana</h2>
+        <p data-promo-band-subtitle>Condições especiais com garantia e suporte dedicado.</p>
       </div>
-    </header>
+      <a class="btn primary" href="/#produtos" data-promo-band-cta>Ver itens</a>
+    </section>
 
-    <main>
-      <section id="promocoes" class="section promo-band" data-section="promotions">
-        <div>
-          <h2 data-promo-band-title>Destaques da semana</h2>
-          <p data-promo-band-subtitle>Condições especiais com garantia e suporte dedicado.</p>
-        </div>
-        <a class="btn primary" href="/#produtos" data-promo-band-cta>Ver itens</a>
-      </section>
+    <section class="section" data-section="promotions">
+      <div class="section-head">
+        <h2>Promoções em destaque</h2>
+      </div>
+      <div class="promo-carousel">
+        <div id="promoBannerGrid" class="carousel-track"></div>
+      </div>
+    </section>
 
-      <section class="section" data-section="promotions">
-        <div class="section-head">
-          <h2>Promoções em destaque</h2>
-        </div>
-        <div class="promo-carousel">
-          <div id="promoBannerGrid" class="carousel-track"></div>
-        </div>
-      </section>
+    <section class="catalog-intro">
+      <div>
+        <p class="tag" data-hero-tagline>Portal central de soluções</p>
+        <h1 data-hero-title>Escolha com clareza. Decida com confiança.</h1>
+        <p class="subtitle" data-hero-subtitle>
+          Compare ofertas, veja demos e finalize o pagamento com segurança.
+        </p>
+      </div>
+      <div class="trust-chips">
+        <span class="trust-chip">Checkout seguro</span>
+        <span class="trust-chip">Entrega digital rápida</span>
+        <span class="trust-chip">Suporte humano</span>
+      </div>
+    </section>
 
-      <section class="catalog-intro">
-        <div>
-          <p class="tag" data-hero-tagline>Portal central de soluções</p>
-          <h1 data-hero-title>Escolha com clareza. Decida com confiança.</h1>
-          <p class="subtitle" data-hero-subtitle>
-            Compare ofertas, veja demos e finalize o pagamento com segurança.
-          </p>
-        </div>
-        <div class="trust-chips">
-          <span class="trust-chip">Checkout seguro</span>
-          <span class="trust-chip">Entrega digital rápida</span>
-          <span class="trust-chip">Suporte humano</span>
-        </div>
-      </section>
+    <section id="produtos" class="section" data-section="products">
+      <div class="section-head">
+        <h2>Produtos</h2>
+        <p>Itens digitais e sistemas prontos para acelerar seu resultado.</p>
+      </div>
+      <div id="productsGrid" class="card-grid"></div>
+    </section>
 
-      <section id="produtos" class="section" data-section="products">
-        <div class="section-head">
-          <h2>Produtos</h2>
-          <p>Itens digitais e sistemas prontos para acelerar seu resultado.</p>
-        </div>
-        <div id="productsGrid" class="card-grid"></div>
-      </section>
+    <section id="servicos" class="section" data-section="services">
+      <div class="section-head">
+        <h2>Serviços</h2>
+        <p>Pacotes e acompanhamentos personalizados com foco em conversao.</p>
+      </div>
+      <div id="servicesGrid" class="card-grid"></div>
+    </section>
 
-      <section id="servicos" class="section" data-section="services">
-        <div class="section-head">
-          <h2>Serviços</h2>
-          <p>Pacotes e acompanhamentos personalizados com foco em conversao.</p>
-        </div>
-        <div id="servicesGrid" class="card-grid"></div>
-      </section>
-
-      <section id="contato" class="section" data-section="contact">
-        <div class="section-head">
-          <h2>Receba uma recomendação</h2>
-          <p>Deixe seu contato para receber orientação personalizada.</p>
-        </div>
-        <div class="contact-card">
-          <div class="contact-header">
-            <div>
-              <h3>Fale com um especialista</h3>
-              <p class="subtitle">
-                Preencha os campos e receba orientação personalizada em até 24h.
-              </p>
-            </div>
-            <div class="trust-chips">
-              <span class="trust-chip">Resposta rapida</span>
-              <span class="trust-chip">Atendimento humano</span>
-              <span class="trust-chip">Sem compromisso</span>
-            </div>
-          </div>
-          <form id="leadForm" class="lead-form">
-            <div class="form-grid">
-              <label>
-                Nome
-                <input type="text" name="name" required />
-              </label>
-              <label>
-                Email
-                <input type="email" name="email" required />
-              </label>
-              <label>
-                WhatsApp
-                <input type="text" name="phone" placeholder="(00) 00000-0000" />
-              </label>
-            </div>
-            <button class="btn primary" type="submit">Quero recomendação</button>
-            <p class="form-note">
-              Ao enviar, você concorda em receber contato sobre os produtos.
+    <section id="contato" class="section" data-section="contact">
+      <div class="section-head">
+        <h2>Receba uma recomendação</h2>
+        <p>Deixe seu contato para receber orientação personalizada.</p>
+      </div>
+      <div class="contact-card">
+        <div class="contact-header">
+          <div>
+            <h3>Fale com um especialista</h3>
+            <p class="subtitle">
+              Preencha os campos e receba orientação personalizada em até 24h.
             </p>
-          </form>
-          <div id="leadStatus" class="form-status" role="status"></div>
-          <div id="supportLinks" class="support-links"></div>
+          </div>
+          <div class="trust-chips">
+            <span class="trust-chip">Resposta rapida</span>
+            <span class="trust-chip">Atendimento humano</span>
+            <span class="trust-chip">Sem compromisso</span>
+          </div>
         </div>
-      </section>
-    </main>
-
-    <footer class="site-footer">
-      <p>Portal Produtos. Todos os direitos reservados.</p>
-    </footer>
-
-    <div id="basketOverlay" class="basket-overlay"></div>
-    <aside id="basketDrawer" class="basket-drawer">
-      <div class="basket-header">
-        <div>
-          <h3>Sua cesta</h3>
-          <p class="subtitle">Itens selecionados para compra.</p>
-        </div>
-        <button id="basketClose" class="btn ghost" type="button">Fechar</button>
+        <form id="leadForm" class="lead-form">
+          <div class="form-grid">
+            <label>
+              Nome
+              <input type="text" name="name" required />
+            </label>
+            <label>
+              Email
+              <input type="email" name="email" required />
+            </label>
+            <label>
+              WhatsApp
+              <input type="text" name="phone" placeholder="(00) 00000-0000" />
+            </label>
+          </div>
+          <button class="btn primary" type="submit">Quero recomendação</button>
+          <p class="form-note">
+            Ao enviar, você concorda em receber contato sobre os produtos.
+          </p>
+        </form>
+        <div id="leadStatus" class="form-status" role="status"></div>
+        <div id="supportLinks" class="support-links"></div>
       </div>
-      <div id="basketEmpty" class="basket-empty">Nenhum item na cesta.</div>
-      <div id="basketList" class="basket-list"></div>
-      <div class="basket-footer">
-        <div class="basket-total">
-          <span>Total</span>
-          <strong id="basketTotal">R$ 0,00</strong>
-        </div>
-        <div class="hero-actions">
-          <button id="basketClear" class="btn ghost" type="button">Limpar</button>
-          <button id="basketCheckout" class="btn primary" type="button">Finalizar compra</button>
-        </div>
-      </div>
-    </aside>
+    </section>
+  </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/axios@1.7.2/dist/axios.min.js"></script>
-    <script src="/shared/js/analytics.js"></script>
-    <script src="/shared/js/nav.js"></script>
-    <script src="/portal/controllers/app.js"></script>
-  </body>
+  <footer class="site-footer">
+    <div class="footer-text">
+      <span id="footerPortalName">Portal Produtos</span>
+      <span>&copy;</span>
+      <span id="footerYear">2026</span>
+    </div>
+    <p class="footer-copy">Todos os direitos reservados.</p>
+  </footer>
+
+  <div id="basketOverlay" class="basket-overlay"></div>
+  <aside id="basketDrawer" class="basket-drawer">
+    <div class="basket-header">
+      <div>
+        <h3>Sua cesta</h3>
+        <p class="subtitle">Itens selecionados para compra.</p>
+      </div>
+      <button id="basketClose" class="btn ghost" type="button">Fechar</button>
+    </div>
+    <div id="basketEmpty" class="basket-empty">Nenhum item na cesta.</div>
+    <div id="basketList" class="basket-list"></div>
+    <div class="basket-footer">
+      <div class="basket-total">
+        <span>Total</span>
+        <strong id="basketTotal">R$ 0,00</strong>
+      </div>
+      <div class="hero-actions">
+        <button id="basketClear" class="btn ghost" type="button">Limpar</button>
+        <button id="basketCheckout" class="btn primary" type="button">Finalizar compra</button>
+      </div>
+    </div>
+  </aside>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.7.2/dist/axios.min.js"></script>
+  <script src="/shared/js/analytics.js"></script>
+  <script src="/shared/js/nav.js"></script>
+  <script src="/portal/controllers/app.js"></script>
+</body>
+
 </html>

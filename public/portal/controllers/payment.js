@@ -1,5 +1,14 @@
 const portalNameEl = document.querySelector("[data-portal-name]");
 const portalBrandEl = document.querySelector("[data-portal-brand]");
+const metaDescription = document.getElementById("metaDescription");
+const canonicalUrl = document.getElementById("canonicalUrl");
+const ogTitle = document.getElementById("ogTitle");
+const ogDescription = document.getElementById("ogDescription");
+const ogUrl = document.getElementById("ogUrl");
+const ogSiteName = document.getElementById("ogSiteName");
+const twitterTitle = document.getElementById("twitterTitle");
+const twitterDescription = document.getElementById("twitterDescription");
+const seoSchema = document.getElementById("seoSchema");
 const paymentTitle = document.getElementById("paymentTitle");
 const paymentDescription = document.getElementById("paymentDescription");
 const paymentImage = document.getElementById("paymentImage");
@@ -39,6 +48,31 @@ const basketKey = "basketItems";
 let selectedItem = null;
 let selectedItems = [];
 let portalConfig = null;
+
+function updateSeoTags({ title, description }) {
+  const safeTitle = title || document.title;
+  const safeDescription = description || metaDescription?.content || "";
+  const url = window.location.href;
+  if (metaDescription) metaDescription.content = safeDescription;
+  if (canonicalUrl) canonicalUrl.setAttribute("href", url);
+  if (ogTitle) ogTitle.setAttribute("content", safeTitle);
+  if (ogDescription) ogDescription.setAttribute("content", safeDescription);
+  if (ogUrl) ogUrl.setAttribute("content", url);
+  if (ogSiteName && portalConfig?.portalName) {
+    ogSiteName.setAttribute("content", portalConfig.portalName);
+  }
+  if (twitterTitle) twitterTitle.setAttribute("content", safeTitle);
+  if (twitterDescription) twitterDescription.setAttribute("content", safeDescription);
+  if (seoSchema) {
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      name: safeTitle,
+      url
+    };
+    seoSchema.textContent = JSON.stringify(schema);
+  }
+}
 let cardBrickLoaded = false;
 let statusPollTimer = null;
 
@@ -46,6 +80,79 @@ function trackPixel(name, payload) {
   if (window.trackPixelEvent) {
     window.trackPixelEvent(name, payload);
   }
+}
+
+function getDeviceType() {
+  const ua = navigator.userAgent || "";
+  if (/android/i.test(ua)) return "android";
+  if (/iphone|ipad|ipod/i.test(ua)) return "ios";
+  return "pc";
+}
+
+function getClientId() {
+  const key = "portalClientId";
+  let value = localStorage.getItem(key);
+  if (!value) {
+    if (window.crypto && crypto.randomUUID) {
+      value = crypto.randomUUID();
+    } else {
+      value = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+    localStorage.setItem(key, value);
+  }
+  return value;
+}
+
+function getSessionId() {
+  const key = "portalSessionId";
+  const lastKey = "portalSessionLast";
+  const now = Date.now();
+  const timeoutMs = 30 * 60 * 1000;
+  const last = Number(sessionStorage.getItem(lastKey) || 0);
+  let sessionId = sessionStorage.getItem(key);
+  if (!sessionId || now - last > timeoutMs) {
+    if (window.crypto && crypto.randomUUID) {
+      sessionId = crypto.randomUUID();
+    } else {
+      sessionId = `${now}-${Math.random().toString(16).slice(2)}`;
+    }
+  }
+  sessionStorage.setItem(key, sessionId);
+  sessionStorage.setItem(lastKey, String(now));
+  return sessionId;
+}
+
+function getUtmParams() {
+  const params = new URLSearchParams(window.location.search);
+  const current = {
+    utmSource: params.get("utm_source"),
+    utmMedium: params.get("utm_medium"),
+    utmCampaign: params.get("utm_campaign"),
+    utmContent: params.get("utm_content"),
+    utmTerm: params.get("utm_term")
+  };
+  const stored = JSON.parse(localStorage.getItem("portalUtm") || "{}");
+  const hasCurrent = Object.values(current).some((value) => value);
+  if (hasCurrent) {
+    localStorage.setItem("portalUtm", JSON.stringify(current));
+    return current;
+  }
+  return stored;
+}
+
+function sendEventBeacon(body) {
+  const data = JSON.stringify(body);
+  if (navigator.sendBeacon) {
+    const blob = new Blob([data], { type: "application/json" });
+    navigator.sendBeacon("/api/events", blob);
+    return;
+  }
+  fetch("/api/events", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: data,
+    keepalive: true
+  }).catch(() => {});
 }
 
 function sendEvent(itemType, itemId, eventName, payload) {
@@ -57,10 +164,48 @@ function sendEvent(itemType, itemId, eventName, payload) {
       itemType,
       itemId,
       eventName,
-      device: "unknown",
-      payload
+      device: getDeviceType(),
+      clientId: getClientId(),
+      payload: {
+        ...payload,
+        sessionId: getSessionId(),
+        pagePath: window.location.pathname,
+        referrer: document.referrer || null,
+        ...getUtmParams()
+      }
     })
   }).catch(() => {});
+}
+
+function initTimeOnPage() {
+  const params = new URLSearchParams(window.location.search);
+  const type = params.get("type") || "site";
+  const id = Number(params.get("id") || 0) || 0;
+  const startedAt = Date.now();
+  let sent = false;
+  const send = () => {
+    if (sent) return;
+    sent = true;
+    const durationMs = Date.now() - startedAt;
+    sendEventBeacon({
+      itemType: type,
+      itemId: id,
+      eventName: "time_on_page",
+      device: getDeviceType(),
+      clientId: getClientId(),
+      pagePath: window.location.pathname,
+      payload: {
+        sessionId: getSessionId(),
+        referrer: document.referrer || null,
+        durationMs,
+        ...getUtmParams()
+      }
+    });
+  };
+  window.addEventListener("beforeunload", send);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") send();
+  });
 }
 let currentOrderId = "";
 let paymentTotal = 0;
@@ -71,6 +216,8 @@ function formatPrice(value) {
   const number = Number(value || 0);
   return number.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
+
+initTimeOnPage();
 
 function formatPhone(value) {
   const digits = String(value || "").replace(/\D/g, "").slice(0, 11);
@@ -380,6 +527,10 @@ async function loadPortalConfig() {
     if (portalBrandEl && data?.brandLabel) {
       portalBrandEl.textContent = data.brandLabel;
     }
+    updateSeoTags({
+      title: document.title,
+      description: data?.heroSubtitle || metaDescription?.content
+    });
     if (data?.showPayments === false) {
       window.location.href = "/";
     }

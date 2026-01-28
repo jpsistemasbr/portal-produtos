@@ -13,6 +13,17 @@ const promoBandSubtitleEl = document.querySelector("[data-promo-band-subtitle]")
 const promoBandCtaEl = document.querySelector("[data-promo-band-cta]");
 const promoSectionTitleEl = document.querySelector("[data-promo-section-title]");
 const supportLinksEl = document.getElementById("supportLinks");
+const footerPortalNameEl = document.getElementById("footerPortalName");
+const footerYearEl = document.getElementById("footerYear");
+const metaDescription = document.getElementById("metaDescription");
+const canonicalUrl = document.getElementById("canonicalUrl");
+const ogTitle = document.getElementById("ogTitle");
+const ogDescription = document.getElementById("ogDescription");
+const ogUrl = document.getElementById("ogUrl");
+const ogSiteName = document.getElementById("ogSiteName");
+const twitterTitle = document.getElementById("twitterTitle");
+const twitterDescription = document.getElementById("twitterDescription");
+const seoSchema = document.getElementById("seoSchema");
 const basketToggle = document.getElementById("basketToggle");
 const basketCount = document.getElementById("basketCount");
 const basketDrawer = document.getElementById("basketDrawer");
@@ -46,6 +57,105 @@ const navMap = {
   promotions: document.querySelector("[data-nav='promotions']"),
   contact: document.querySelector("[data-nav='contact']")
 };
+
+function updateSeoTags({ title, description }) {
+  const safeTitle = title || document.title;
+  const safeDescription = description || metaDescription?.content || "";
+  const url = window.location.href;
+  if (metaDescription) metaDescription.content = safeDescription;
+  if (canonicalUrl) canonicalUrl.setAttribute("href", url);
+  if (ogTitle) ogTitle.setAttribute("content", safeTitle);
+  if (ogDescription) ogDescription.setAttribute("content", safeDescription);
+  if (ogUrl) ogUrl.setAttribute("content", url);
+  if (ogSiteName && safeTitle) ogSiteName.setAttribute("content", safeTitle);
+  if (twitterTitle) twitterTitle.setAttribute("content", safeTitle);
+  if (twitterDescription) twitterDescription.setAttribute("content", safeDescription);
+  if (seoSchema) {
+    const base = window.location.origin;
+    const schema = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          name: safeTitle,
+          url: base
+        },
+        {
+          "@type": "WebSite",
+          name: safeTitle,
+          url: base
+        }
+      ]
+    };
+    seoSchema.textContent = JSON.stringify(schema);
+  }
+}
+
+function getClientId() {
+  const key = "portalClientId";
+  let value = localStorage.getItem(key);
+  if (!value) {
+    if (window.crypto && crypto.randomUUID) {
+      value = crypto.randomUUID();
+    } else {
+      value = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+    localStorage.setItem(key, value);
+  }
+  return value;
+}
+
+function getSessionId() {
+  const key = "portalSessionId";
+  const lastKey = "portalSessionLast";
+  const now = Date.now();
+  const timeoutMs = 30 * 60 * 1000;
+  const last = Number(sessionStorage.getItem(lastKey) || 0);
+  let sessionId = sessionStorage.getItem(key);
+  if (!sessionId || now - last > timeoutMs) {
+    if (window.crypto && crypto.randomUUID) {
+      sessionId = crypto.randomUUID();
+    } else {
+      sessionId = `${now}-${Math.random().toString(16).slice(2)}`;
+    }
+  }
+  sessionStorage.setItem(key, sessionId);
+  sessionStorage.setItem(lastKey, String(now));
+  return sessionId;
+}
+
+function getUtmParams() {
+  const params = new URLSearchParams(window.location.search);
+  const current = {
+    utmSource: params.get("utm_source"),
+    utmMedium: params.get("utm_medium"),
+    utmCampaign: params.get("utm_campaign"),
+    utmContent: params.get("utm_content"),
+    utmTerm: params.get("utm_term")
+  };
+  const stored = JSON.parse(localStorage.getItem("portalUtm") || "{}");
+  const hasCurrent = Object.values(current).some((value) => value);
+  if (hasCurrent) {
+    localStorage.setItem("portalUtm", JSON.stringify(current));
+    return current;
+  }
+  return stored;
+}
+
+function sendEventBeacon(body) {
+  const data = JSON.stringify(body);
+  if (navigator.sendBeacon) {
+    const blob = new Blob([data], { type: "application/json" });
+    navigator.sendBeacon("/api/events", blob);
+    return;
+  }
+  fetch("/api/events", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: data,
+    keepalive: true
+  }).catch(() => {});
+}
 
 function getDeviceType() {
   const ua = navigator.userAgent || "";
@@ -429,9 +539,44 @@ function sendEvent(itemType, itemId, eventName, payload) {
       itemId,
       eventName,
       device: getDeviceType(),
-      payload
+      clientId: getClientId(),
+      payload: {
+        ...payload,
+        sessionId: getSessionId(),
+        pagePath: window.location.pathname,
+        referrer: document.referrer || null,
+        ...getUtmParams()
+      }
     })
   }).catch(() => {});
+}
+
+function initTimeOnPage() {
+  const startedAt = Date.now();
+  let sent = false;
+  const send = () => {
+    if (sent) return;
+    sent = true;
+    const durationMs = Date.now() - startedAt;
+    sendEventBeacon({
+      itemType: "site",
+      itemId: 0,
+      eventName: "time_on_page",
+      device: getDeviceType(),
+      clientId: getClientId(),
+      pagePath: window.location.pathname,
+      payload: {
+        sessionId: getSessionId(),
+        referrer: document.referrer || null,
+        durationMs,
+        ...getUtmParams()
+      }
+    });
+  };
+  window.addEventListener("beforeunload", send);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") send();
+  });
 }
 
 async function loadPortalConfig() {
@@ -452,6 +597,8 @@ async function loadPortalConfig() {
       document.title = data.portalName;
     }
     if (portalBrandEl && data?.brandLabel) portalBrandEl.textContent = data.brandLabel;
+    if (footerPortalNameEl && data?.portalName) footerPortalNameEl.textContent = data.portalName;
+    if (footerYearEl) footerYearEl.textContent = String(new Date().getFullYear());
     if (heroTaglineEl && data?.heroTagline) heroTaglineEl.textContent = data.heroTagline;
     if (heroTitleEl && data?.heroTitle) heroTitleEl.textContent = data.heroTitle;
     if (heroSubtitleEl && data?.heroSubtitle) heroSubtitleEl.textContent = data.heroSubtitle;
@@ -459,6 +606,10 @@ async function loadPortalConfig() {
     if (promoBandSubtitleEl && data?.promoBandSubtitle) promoBandSubtitleEl.textContent = data.promoBandSubtitle;
     if (promoBandCtaEl && data?.promoBandCtaLabel) promoBandCtaEl.textContent = data.promoBandCtaLabel;
     if (promoSectionTitleEl && data?.promoSectionTitle) promoSectionTitleEl.textContent = data.promoSectionTitle;
+    updateSeoTags({
+      title: data?.portalName || document.title,
+      description: data?.heroSubtitle || metaDescription?.content
+    });
     if (supportLinksEl) {
       const supportHtml = buildSupportLinks(data?.supportEmail, data?.supportWhatsApp);
       supportLinksEl.innerHTML = supportHtml;
@@ -472,11 +623,13 @@ async function loadPortalConfig() {
     if (navMap.products) navMap.products.style.display = data?.showProducts ? "" : "none";
     if (navMap.services) navMap.services.style.display = data?.showServices ? "" : "none";
     updatePromotionsVisibility();
-    if (navMap.contact) navMap.contact.style.display = data?.showContact ? "" : "none";
+if (navMap.contact) navMap.contact.style.display = data?.showContact ? "" : "none";
   } catch (err) {
     // silent
   }
 }
+
+initTimeOnPage();
 
 document.addEventListener("click", (event) => {
   const card = event.target.closest(".card[data-id]");

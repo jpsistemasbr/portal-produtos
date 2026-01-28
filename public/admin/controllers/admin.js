@@ -22,6 +22,18 @@ const visitCount = document.getElementById("visitCount");
 const deviceAndroid = document.getElementById("deviceAndroid");
 const deviceIos = document.getElementById("deviceIos");
 const devicePc = document.getElementById("devicePc");
+const uniqueVisitors = document.getElementById("uniqueVisitors");
+const sessionCount = document.getElementById("sessionCount");
+const bounceRate = document.getElementById("bounceRate");
+const avgTimeOnPage = document.getElementById("avgTimeOnPage");
+const funnelPageView = document.getElementById("funnelPageView");
+const funnelViewItem = document.getElementById("funnelViewItem");
+const funnelCheckout = document.getElementById("funnelCheckout");
+const funnelPurchase = document.getElementById("funnelPurchase");
+const funnelChart = document.getElementById("funnelChart");
+const cohortChart = document.getElementById("cohortChart");
+let funnelChartInstance = null;
+let cohortChartInstance = null;
 const configForm = document.getElementById("configForm");
 const pixQrPreview = document.getElementById("pixQrPreview");
 const pageTitle = document.querySelector("title");
@@ -95,17 +107,235 @@ function formatPrice(value) {
   return number.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
+function formatDuration(ms) {
+  const totalSeconds = Math.max(0, Math.floor(Number(ms || 0) / 1000));
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  if (minutes <= 0) return `${seconds}s`;
+  return `${minutes}m ${seconds}s`;
+}
+
 function formatStatus(value) {
   const map = {
     approved: "Aprovado",
     pending: "Pendente",
-    in_process: "Em analise",
+    in_process: "Em análise",
     rejected: "Recusado",
     cancelled: "Cancelado",
     paid: "Pago",
     failed: "Falhou"
   };
   return map[value] || value || "-";
+}
+
+function formatEventName(value) {
+  const map = {
+    page_view: "Visita na página",
+    view_item: "Visualizou item",
+    card_click: "Clique no card",
+    saiba_mais_click: "Clique em Saiba mais",
+    promo_detail_click: "Clique no banner promocional",
+    promo_demo_click: "Clique em Demo (promo)",
+    promo_video_click: "Clique em Vídeo (promo)",
+    demo_click: "Clique em Demo",
+    video_click: "Clique em Vídeo",
+    pay_start_click: "Iniciar compra",
+    initiate_checkout: "Iniciar checkout",
+    pix_generated: "PIX gerado",
+    card_payment_sent: "Pagamento cartão enviado",
+    purchase: "Compra finalizada",
+    lead_submit: "Lead enviado",
+    time_on_page: "Tempo na página"
+  };
+  return map[value] || value || "-";
+}
+
+function formatItemType(value) {
+  const map = {
+    product: "Produto",
+    service: "Serviço",
+    promotion: "Promoção",
+    site: "Site",
+    bundle: "Carrinho",
+    order: "Pedido"
+  };
+  return map[value] || value || "-";
+}
+
+function formatDevice(value) {
+  const map = {
+    android: "Android",
+    ios: "iOS",
+    pc: "PC"
+  };
+  return map[value] || value || "-";
+}
+
+function getEventCategory(eventName) {
+  const map = {
+    page_view: "Navegação",
+    view_item: "Navegação",
+    card_click: "Navegação",
+    saiba_mais_click: "Navegação",
+    lead_submit: "Navegação",
+    time_on_page: "Navegação",
+    promo_detail_click: "Promoções",
+    promo_demo_click: "Promoções",
+    promo_video_click: "Promoções",
+    demo_click: "Promoções",
+    video_click: "Promoções",
+    pay_start_click: "Checkout",
+    initiate_checkout: "Checkout",
+    pix_generated: "Pagamento",
+    card_payment_sent: "Pagamento",
+    purchase: "Pagamento"
+  };
+  return map[eventName] || "Outros";
+}
+
+
+function toggleChartEmptyState(canvas, show) {
+  const shell = canvas?.parentElement;
+  if (!shell) return;
+  let empty = shell.querySelector(".chart-empty");
+  if (!empty) {
+    empty = document.createElement("div");
+    empty.className = "chart-empty";
+    empty.textContent = "Sem dados.";
+    shell.appendChild(empty);
+  }
+  empty.style.display = show ? "flex" : "none";
+}
+
+function buildFunnelChart(items) {
+  if (!funnelChart || !window.Chart) return;
+  const ordered = [
+    { key: "page_view", label: "Visitas" },
+    { key: "view_item", label: "Ver item" },
+    { key: "pay_start_click", label: "Iniciar compra" },
+    { key: "purchase", label: "Compra" }
+  ];
+  const map = Array.isArray(items)
+    ? items.reduce((acc, row) => {
+        acc[row.eventName] = row;
+        return acc;
+      }, {})
+    : {};
+  const labels = ordered.map((row) => row.label);
+  const values = ordered.map((row) => map[row.key]?.total || 0);
+  const hasData = values.some((value) => value > 0);
+  toggleChartEmptyState(funnelChart, !hasData);
+  if (funnelChartInstance) funnelChartInstance.destroy();
+  const ctx = funnelChart.getContext("2d");
+  funnelChartInstance = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "Conversões",
+          data: values,
+          fill: true,
+          tension: 0.35,
+          borderColor: "rgba(255, 186, 73, 0.95)",
+          backgroundColor: "rgba(255, 186, 73, 0.18)",
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          pointBackgroundColor: "rgba(255, 186, 73, 0.95)"
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: "rgba(15, 23, 42, 0.95)",
+          borderColor: "rgba(255, 186, 73, 0.4)",
+          borderWidth: 1,
+          padding: 12
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: "#d1d5db" },
+          grid: { color: "rgba(148, 163, 184, 0.15)" }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: { color: "#9ca3af", stepSize: 1 },
+          grid: { color: "rgba(148, 163, 184, 0.1)" }
+        }
+      }
+    }
+  });
+}
+
+function buildCohortChart(items) {
+  if (!cohortChart || !window.Chart) return;
+  const safeItems = Array.isArray(items) ? items : [];
+  const labels = safeItems.map((row) => row.date);
+  const newVisitors = safeItems.map((row) => row.newVisitors || 0);
+  const returningVisitors = safeItems.map((row) => row.returningVisitors || 0);
+  const hasData = [...newVisitors, ...returningVisitors].some((value) => value > 0);
+  toggleChartEmptyState(cohortChart, !hasData);
+  if (cohortChartInstance) cohortChartInstance.destroy();
+  const ctx = cohortChart.getContext("2d");
+  cohortChartInstance = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "Novos visitantes",
+          data: newVisitors,
+          fill: true,
+          tension: 0.35,
+          borderColor: "rgba(94, 234, 212, 0.9)",
+          backgroundColor: "rgba(94, 234, 212, 0.2)",
+          pointRadius: 3,
+          pointHoverRadius: 5
+        },
+        {
+          label: "Recorrentes",
+          data: returningVisitors,
+          fill: true,
+          tension: 0.35,
+          borderColor: "rgba(255, 138, 76, 0.9)",
+          backgroundColor: "rgba(255, 138, 76, 0.18)",
+          pointRadius: 3,
+          pointHoverRadius: 5
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: { color: "#d1d5db" }
+        },
+        tooltip: {
+          backgroundColor: "rgba(15, 23, 42, 0.95)",
+          borderColor: "rgba(94, 234, 212, 0.3)",
+          borderWidth: 1,
+          padding: 12
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: "#d1d5db" },
+          grid: { color: "rgba(148, 163, 184, 0.15)" }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: { color: "#9ca3af", stepSize: 1 },
+          grid: { color: "rgba(148, 163, 184, 0.1)" }
+        }
+      }
+    }
+  });
 }
 
 function statusBadge(value) {
@@ -176,7 +406,7 @@ function renderPromotions(items) {
         : "";
       const links = [
         promo.linkDemo ? `<a href="${promo.linkDemo}" target="_blank">Demo</a>` : "",
-        promo.linkVideo ? `<a href="${promo.linkVideo}" target="_blank">Video</a>` : ""
+        promo.linkVideo ? `<a href="${promo.linkVideo}" target="_blank">Vídeo</a>` : ""
       ]
         .filter(Boolean)
         .join(" | ");
@@ -421,27 +651,50 @@ async function loadReports() {
     return nameMatch && typeMatch && deviceMatch;
   });
   if (eventTable) {
-    eventTable.innerHTML = filteredEvents
-      .map(
-        (evt) => `
-          <tr>
-            <td>${evt.eventName}</td>
-            <td>${evt.itemType}</td>
-            <td>${evt.itemId}</td>
-            <td>${evt.device}</td>
-            <td>${evt.total}</td>
-            <td>
-              <button class="btn btn-outline-danger btn-sm"
-                data-action="delete-event"
-                data-event-name="${evt.eventName}"
-                data-item-type="${evt.itemType}"
-                data-item-id="${evt.itemId}">
-                Excluir
-              </button>
-            </td>
+    const grouped = filteredEvents.reduce((acc, evt) => {
+      const category = getEventCategory(evt.eventName);
+      if (!acc[category]) acc[category] = [];
+      acc[category].push(evt);
+      return acc;
+    }, {});
+    const order = ["Navegação", "Promoções", "Checkout", "Pagamento", "Outros"];
+    eventTable.innerHTML = order
+      .filter((category) => grouped[category]?.length)
+      .map((category) => {
+        const rows = grouped[category]
+          .map(
+            (evt) => `
+              <tr>
+                <td>
+                  <span class="event-name" title="${evt.eventName}">
+                    ${formatEventName(evt.eventName)}
+                    <span class="event-tag">${evt.eventName}</span>
+                  </span>
+                </td>
+                <td>${formatItemType(evt.itemType)}</td>
+                <td>${evt.itemId}</td>
+                <td>${formatDevice(evt.device)}</td>
+                <td>${evt.total}</td>
+                <td>
+                  <button class="btn btn-outline-danger btn-sm"
+                    data-action="delete-event"
+                    data-event-name="${evt.eventName}"
+                    data-item-type="${evt.itemType}"
+                    data-item-id="${evt.itemId}">
+                    Excluir
+                  </button>
+                </td>
+              </tr>
+            `
+          )
+          .join("");
+        return `
+          <tr class="event-group-row">
+            <td colspan="6">${category}</td>
           </tr>
-        `
-      )
+          ${rows}
+        `;
+      })
       .join("");
   }
 
@@ -451,6 +704,27 @@ async function loadReports() {
   if (deviceAndroid) deviceAndroid.textContent = devices.android || 0;
   if (deviceIos) deviceIos.textContent = devices.ios || 0;
   if (devicePc) devicePc.textContent = devices.pc || 0;
+  if (uniqueVisitors) uniqueVisitors.textContent = metrics.uniqueVisitorsToday || 0;
+  if (sessionCount) sessionCount.textContent = metrics.sessionsToday || 0;
+  if (bounceRate) {
+    const rate = Number(metrics.bounceRateToday || 0) * 100;
+    bounceRate.textContent = `${rate.toFixed(0)}%`;
+  }
+  if (avgTimeOnPage) avgTimeOnPage.textContent = formatDuration(metrics.avgTimeOnPageTodayMs || 0);
+  if (Array.isArray(metrics.funnel)) {
+    const map = metrics.funnel.reduce((acc, row) => {
+      acc[row.eventName] = row;
+      return acc;
+    }, {});
+    if (funnelPageView) funnelPageView.textContent = map.page_view?.total || 0;
+    if (funnelViewItem) funnelViewItem.textContent = map.view_item?.total || 0;
+    if (funnelCheckout) funnelCheckout.textContent = map.pay_start_click?.total || 0;
+    if (funnelPurchase) funnelPurchase.textContent = map.purchase?.total || 0;
+    buildFunnelChart(metrics.funnel);
+  }
+  if (Array.isArray(metrics.cohorts)) {
+    buildCohortChart(metrics.cohorts);
+  }
 
   if (orderTable) {
     const orders = ordersRes.data || [];
@@ -478,7 +752,7 @@ async function loadReports() {
         ]
           .filter(Boolean)
           .join("");
-        const methodLabel = order.method === "pix" ? "PIX" : "Cartao";
+        const methodLabel = order.method === "pix" ? "PIX" : "Cartão";
         return `
           <tr>
             <td><a href="#" data-action="view-order" data-id="${order.id}">#${order.id}</a></td>
@@ -540,7 +814,7 @@ function openPromotionForm(mode) {
   promotionForm.elements.id.value = "";
   promotionForm.elements.bannerUrl.value = "";
   promotionForm.elements.active.checked = true;
-  promotionModalTitle.textContent = mode === "edit" ? "Editar promocao" : "Nova promocao";
+  promotionModalTitle.textContent = mode === "edit" ? "Editar promoção" : "Nova promoção";
   promotionModalInstance.show();
   populateTargetOptions();
 }
@@ -602,9 +876,9 @@ if (promotionForm) {
         if (promotionModalInstance) promotionModalInstance.hide();
       }, 600);
     } catch (err) {
-      logAxiosError("salvar promocao", err);
-      setStatus(promotionStatus, "Nao foi possivel salvar a promocao.", "error");
-      setStatus(adminStatus, "Nao foi possivel salvar a promocao.", "error");
+      logAxiosError("salvar promoção", err);
+      setStatus(promotionStatus, "Não foi possível salvar a promoção.", "error");
+      setStatus(adminStatus, "Não foi possível salvar a promoção.", "error");
     }
   });
 }
@@ -663,8 +937,8 @@ if (itemForm) {
       }, 600);
     } catch (err) {
       logAxiosError("salvar item", err);
-      setStatus(itemStatus, "Nao foi possivel salvar o item.", "error");
-      setStatus(adminStatus, "Nao foi possivel salvar o item.", "error");
+      setStatus(itemStatus, "Não foi possível salvar o item.", "error");
+      setStatus(adminStatus, "Não foi possível salvar o item.", "error");
     }
   });
 }
@@ -729,7 +1003,7 @@ promotionList.addEventListener("click", (event) => {
   if (action === "edit-promo") {
     axios.get(`/api/promotions/${id}`).then((resp) => {
       const promo = resp.data;
-      if (promotionModalTitle) promotionModalTitle.textContent = "Editar promocao";
+      if (promotionModalTitle) promotionModalTitle.textContent = "Editar promoção";
       promotionForm.elements.id.value = promo.id;
       promotionForm.elements.title.value = promo.title || "";
       promotionForm.elements.promoPrice.value = promo.promoPrice || "";
@@ -753,7 +1027,7 @@ promotionList.addEventListener("click", (event) => {
       }
       if (promotionModalInstance) promotionModalInstance.show();
     }).catch((err) => {
-      logAxiosError("carregar promocao", err);
+      logAxiosError("carregar promoção", err);
     });
   }
 });
@@ -762,7 +1036,7 @@ if (promotionReset) {
   promotionReset.addEventListener("click", () => {
     promotionForm.reset();
     promotionForm.elements.id.value = "";
-    if (promotionModalTitle) promotionModalTitle.textContent = "Nova promocao";
+    if (promotionModalTitle) promotionModalTitle.textContent = "Nova promoção";
   });
 }
 
@@ -922,7 +1196,7 @@ if (orderTable) {
       }
     }
     const statusLabel = statusBadge(order.status);
-    const methodLabel = order.method === "pix" ? "PIX" : "Cartao";
+    const methodLabel = order.method === "pix" ? "PIX" : "Cartão";
     orderModalBody.innerHTML = `
       <div class="order-detail">
         <div class="order-detail-header">
@@ -1098,8 +1372,8 @@ if (configForm) {
       }
       setStatus(adminStatus, "Configuracoes salvas com sucesso.", "success");
     } catch (err) {
-      logAxiosError("salvar configuracoes", err);
-      setStatus(adminStatus, "Nao foi possivel salvar as configuracoes.", "error");
+      logAxiosError("salvar configurações", err);
+      setStatus(adminStatus, "Não foi possível salvar as configurações.", "error");
     }
   });
 }

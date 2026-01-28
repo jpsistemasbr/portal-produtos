@@ -24,7 +24,16 @@
   [nav, navActions].forEach((container) => {
     if (!container) return;
     container.addEventListener("click", (event) => {
-      if (event.target && event.target.closest("a")) {
+      if (!event.target) return;
+      const link = event.target.closest("a");
+      const button = event.target.closest("button");
+
+      if (link) {
+        setExpanded(false);
+        return;
+      }
+
+      if (button && button.classList.contains("nav-link")) {
         setExpanded(false);
       }
     });

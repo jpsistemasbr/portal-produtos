@@ -4,6 +4,16 @@ const successTitle = document.getElementById("successTitle");
 const successMessage = document.getElementById("successMessage");
 const successInfo = document.getElementById("successInfo");
 const supportInfo = document.getElementById("supportInfo");
+const metaDescription = document.getElementById("metaDescription");
+const canonicalUrl = document.getElementById("canonicalUrl");
+const ogTitle = document.getElementById("ogTitle");
+const ogDescription = document.getElementById("ogDescription");
+const ogUrl = document.getElementById("ogUrl");
+const ogSiteName = document.getElementById("ogSiteName");
+const twitterTitle = document.getElementById("twitterTitle");
+const twitterDescription = document.getElementById("twitterDescription");
+const seoSchema = document.getElementById("seoSchema");
+let portalConfig = null;
 
 function trackPixel(name, payload) {
   if (window.trackPixelEvent) {
@@ -11,6 +21,78 @@ function trackPixel(name, payload) {
   }
 }
 
+function getDeviceType() {
+  const ua = navigator.userAgent || "";
+  if (/android/i.test(ua)) return "android";
+  if (/iphone|ipad|ipod/i.test(ua)) return "ios";
+  return "pc";
+}
+
+function getClientId() {
+  const key = "portalClientId";
+  let value = localStorage.getItem(key);
+  if (!value) {
+    if (window.crypto && crypto.randomUUID) {
+      value = crypto.randomUUID();
+    } else {
+      value = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+    localStorage.setItem(key, value);
+  }
+  return value;
+}
+
+function getSessionId() {
+  const key = "portalSessionId";
+  const lastKey = "portalSessionLast";
+  const now = Date.now();
+  const timeoutMs = 30 * 60 * 1000;
+  const last = Number(sessionStorage.getItem(lastKey) || 0);
+  let sessionId = sessionStorage.getItem(key);
+  if (!sessionId || now - last > timeoutMs) {
+    if (window.crypto && crypto.randomUUID) {
+      sessionId = crypto.randomUUID();
+    } else {
+      sessionId = `${now}-${Math.random().toString(16).slice(2)}`;
+    }
+  }
+  sessionStorage.setItem(key, sessionId);
+  sessionStorage.setItem(lastKey, String(now));
+  return sessionId;
+}
+
+function getUtmParams() {
+  const params = new URLSearchParams(window.location.search);
+  const current = {
+    utmSource: params.get("utm_source"),
+    utmMedium: params.get("utm_medium"),
+    utmCampaign: params.get("utm_campaign"),
+    utmContent: params.get("utm_content"),
+    utmTerm: params.get("utm_term")
+  };
+  const stored = JSON.parse(localStorage.getItem("portalUtm") || "{}");
+  const hasCurrent = Object.values(current).some((value) => value);
+  if (hasCurrent) {
+    localStorage.setItem("portalUtm", JSON.stringify(current));
+    return current;
+  }
+  return stored;
+}
+
+function sendEventBeacon(body) {
+  const data = JSON.stringify(body);
+  if (navigator.sendBeacon) {
+    const blob = new Blob([data], { type: "application/json" });
+    navigator.sendBeacon("/api/events", blob);
+    return;
+  }
+  fetch("/api/events", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: data,
+    keepalive: true
+  }).catch(() => {});
+}
 function sendEvent(itemType, itemId, eventName, payload) {
   if (!itemType || itemId === undefined || itemId === null) return;
   fetch("/api/events", {
@@ -20,10 +102,48 @@ function sendEvent(itemType, itemId, eventName, payload) {
       itemType,
       itemId,
       eventName,
-      device: "unknown",
-      payload
+      device: getDeviceType(),
+      clientId: getClientId(),
+      payload: {
+        ...payload,
+        sessionId: getSessionId(),
+        pagePath: window.location.pathname,
+        referrer: document.referrer || null,
+        ...getUtmParams()
+      }
     })
   }).catch(() => {});
+}
+
+function initTimeOnPage() {
+  const orderId = getOrderId();
+  const itemType = "order";
+  const itemId = orderId ? Number(orderId) || 0 : 0;
+  const startedAt = Date.now();
+  let sent = false;
+  const send = () => {
+    if (sent) return;
+    sent = true;
+    const durationMs = Date.now() - startedAt;
+    sendEventBeacon({
+      itemType,
+      itemId,
+      eventName: "time_on_page",
+      device: getDeviceType(),
+      clientId: getClientId(),
+      pagePath: window.location.pathname,
+      payload: {
+        sessionId: getSessionId(),
+        referrer: document.referrer || null,
+        durationMs,
+        ...getUtmParams()
+      }
+    });
+  };
+  window.addEventListener("beforeunload", send);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") send();
+  });
 }
 
 function getOrderId() {
@@ -70,9 +190,35 @@ function parseItems(items) {
   return [];
 }
 
+function updateSeoTags({ title, description }) {
+  const safeTitle = title || document.title;
+  const safeDescription = description || metaDescription?.content || "";
+  const url = window.location.href;
+  if (metaDescription) metaDescription.content = safeDescription;
+  if (canonicalUrl) canonicalUrl.setAttribute("href", url);
+  if (ogTitle) ogTitle.setAttribute("content", safeTitle);
+  if (ogDescription) ogDescription.setAttribute("content", safeDescription);
+  if (ogUrl) ogUrl.setAttribute("content", url);
+  if (ogSiteName && portalConfig?.portalName) {
+    ogSiteName.setAttribute("content", portalConfig.portalName);
+  }
+  if (twitterTitle) twitterTitle.setAttribute("content", safeTitle);
+  if (twitterDescription) twitterDescription.setAttribute("content", safeDescription);
+  if (seoSchema) {
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      name: safeTitle,
+      url
+    };
+    seoSchema.textContent = JSON.stringify(schema);
+  }
+}
+
 async function loadPortalConfig() {
   try {
     const { data } = await axios.get("/api/portal-config");
+    portalConfig = data || null;
     if (data?.pageBgColor) {
       document.documentElement.style.setProperty("--bg", data.pageBgColor);
     }
@@ -89,6 +235,10 @@ async function loadPortalConfig() {
     if (portalBrandEl && data?.brandLabel) {
       portalBrandEl.textContent = data.brandLabel;
     }
+    updateSeoTags({
+      title: document.title,
+      description: data?.successMessage || metaDescription?.content
+    });
     if (data?.showSuccess === false) {
       window.location.href = "/";
       return;
@@ -238,3 +388,4 @@ async function loadItem() {
 
 loadPortalConfig();
 loadItem();
+initTimeOnPage();

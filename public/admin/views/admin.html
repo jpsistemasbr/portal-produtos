@@ -15,95 +15,134 @@
 
 <body class="bg-dark text-white admin-page" data-bs-theme="dark">
     <div class="bg-glow"></div>
-    <header class="site-header">
-        <div class="brand">
-            <span class="brand-mark" data-portal-brand>Portal</span>
-            <span>Admin</span>
-        </div>
-        <nav class="nav">
-            <a href="/">Voltar ao site</a>
-            <button id="adminLogout" class="btn ghost btn-sm" type="button">Sair</button>
+    <header class="site-header admin-header">
+        <nav class="navbar navbar-expand-lg navbar-dark w-100 px-0">
+            <div class="container-fluid px-0">
+                <div class="brand navbar-brand m-0">
+                    <span class="brand-mark" data-portal-brand>Portal</span>
+                    <span>Admin</span>
+                </div>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="adminNavbar">
+                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0" id="adminTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active text-white" id="catalog-tab" data-bs-toggle="tab"
+                                data-bs-target="#catalog" type="button" role="tab">
+                                Produtos e Serviços
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link text-white" id="promo-tab" data-bs-toggle="tab"
+                                data-bs-target="#promo" type="button" role="tab">
+                                Promoções
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link text-white" id="payments-tab" data-bs-toggle="tab"
+                                data-bs-target="#payments" type="button" role="tab">
+                                Pedidos e Pagamentos
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link text-white" id="report-tab" data-bs-toggle="tab"
+                                data-bs-target="#report" type="button" role="tab">
+                                Relatórios
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link text-white" id="settings-tab" data-bs-toggle="tab"
+                                data-bs-target="#settings" type="button" role="tab">
+                                Configurações
+                            </button>
+                        </li>
+                    </ul>
+                <div class="d-flex gap-2 ms-lg-3">
+                        <a href="/" class="btn ghost btn-sm icon-btn" aria-label="Voltar ao site" title="Voltar ao site">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M9 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round"></path>
+                                <path d="M3 12h14a4 4 0 0 1 4 4v2" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                        </a>
+                        <button id="adminLogout" class="btn ghost btn-sm icon-btn" type="button" aria-label="Sair"
+                            title="Sair">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M16 17l5-5-5-5" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round"></path>
+                                <path d="M21 12H9" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round"></path>
+                                <path d="M13 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-2"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </nav>
     </header>
 
     <main class="container py-5">
-        <div class="d-flex flex-column flex-lg-row justify-content-between gap-4 align-items-lg-center mb-4">
-            <div>
-                <h1 class="h3 mb-2">Painel de Produtos e Serviços</h1>
-                <p class="text-secondary mb-0">
-                    Gerencie catalogo, edite dados e publique promocoes em poucos passos.
-                </p>
-            </div>
-            <button id="openItemModal" class="btn btn-warning fw-semibold">
-                Adicionar item
-            </button>
-        </div>
-
-        <ul class="nav nav-tabs border-secondary mb-4" id="adminTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active text-white" id="catalog-tab" data-bs-toggle="tab"
-                    data-bs-target="#catalog" type="button" role="tab">
-                    Produtos e Serviços
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link text-white" id="promo-tab" data-bs-toggle="tab" data-bs-target="#promo"
-                    type="button" role="tab">
-                    Promoções
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link text-white" id="payments-tab" data-bs-toggle="tab" data-bs-target="#payments"
-                    type="button" role="tab">
-                    Pedidos e Pagamentos
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link text-white" id="report-tab" data-bs-toggle="tab" data-bs-target="#report"
-                    type="button" role="tab">
-                    Relatórios
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link text-white" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings"
-                    type="button" role="tab">
-                    Configurações
-                </button>
-            </li>
-        </ul>
-
         <div class="tab-content">
             <div class="tab-pane fade show active" id="catalog" role="tabpanel" tabindex="0">
+                <div class="card admin-card admin-tab-header mb-4">
+                    <div
+                        class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                        <div>
+                            <h2 class="h5 mb-1">Produtos e Serviços</h2>
+                            <p class="text-secondary small mb-0">Cadastre novos itens, edite imagens e organize o
+                                catálogo.</p>
+                        </div>
+                        <button id="openItemModal" class="btn btn-warning fw-semibold">
+                            Adicionar item
+                        </button>
+                    </div>
+                </div>
                 <div class="d-flex flex-wrap gap-2 mb-3" id="catalogFilters">
                     <button class="btn btn-outline-light btn-sm active" type="button" data-filter="all">Todos</button>
                     <button class="btn btn-outline-light btn-sm" type="button" data-filter="product">Produtos</button>
-                    <button class="btn btn-outline-light btn-sm" type="button" data-filter="service">Servicos</button>
+                    <button class="btn btn-outline-light btn-sm" type="button" data-filter="service">Serviços</button>
                 </div>
                 <div class="row g-4" id="itemGrid"></div>
             </div>
 
             <div class="tab-pane fade" id="promo" role="tabpanel" tabindex="0">
-                <div class="card admin-card mb-4">
+                <div class="card admin-card admin-tab-header mb-4">
                     <div
                         class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                         <div>
-                            <h2 class="h5 mb-1">Promocoes</h2>
-                            <p class="text-secondary small mb-0">Crie campanhas com banner e destaque no catalogo.</p>
+                            <h2 class="h5 mb-1">Promoções</h2>
+                            <p class="text-secondary small mb-0">Crie campanhas com banner e destaque no catálogo.</p>
                         </div>
-                        <button id="openPromotionModal" class="btn btn-warning fw-semibold">Nova promocao</button>
+                        <button id="openPromotionModal" class="btn btn-warning fw-semibold">Nova promoção</button>
                     </div>
                 </div>
                 <div id="promotionList" class="row g-3"></div>
             </div>
 
             <div class="tab-pane fade" id="payments" role="tabpanel" tabindex="0">
-                <div class="row g-4">
+                <div class="row g-3">
                     <div class="col-12">
+                        <div class="card admin-card admin-tab-header mb-3">
+                            <div
+                                class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                                <div>
+                                    <h2 class="h5 mb-1">Pedidos e Pagamentos</h2>
+                                    <p class="text-secondary small mb-0">Acompanhe pedidos, filtros e status de
+                                        pagamento.</p>
+                                </div>
+                            </div>
+                        </div>
                         <div class="card admin-card">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h2 class="h5 mb-0">Pedidos e pagamentos</h2>
-                                    <span class="text-secondary small">Ultimos 200 registros</span>
+                                    <span class="text-secondary small">Últimos 200 registros</span>
                                 </div>
                                 <div class="row g-2 mb-3">
                                     <div class="col-md-4">
@@ -122,9 +161,9 @@
                                     </div>
                                     <div class="col-md-3">
                                         <select id="orderFilterMethod" class="form-select admin-input">
-                                            <option value="">Todos os metodos</option>
+                                            <option value="">Todos os métodos</option>
                                             <option value="pix">PIX</option>
-                                            <option value="card">Cartao</option>
+                                            <option value="card">Cartão</option>
                                         </select>
                                     </div>
                                     <div class="col-md-2">
@@ -139,7 +178,7 @@
                                                 <th>Pedido</th>
                                                 <th>Itens</th>
                                                 <th>Contato</th>
-                                                <th>Metodo</th>
+                                                <th>Método</th>
                                                 <th>Status</th>
                                                 <th>Valor</th>
                                                 <th>Pagamento</th>
@@ -155,17 +194,55 @@
                     </div>
                 </div>
             </div>
-
             <div class="tab-pane fade" id="report" role="tabpanel" tabindex="0">
-                <div class="row g-4">
-                    <div class="col-12 col-xl-5">
-                        <div class="card admin-card h-100">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="card admin-card admin-tab-header mb-3">
+                            <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                                <div>
+                                    <h2 class="h5 mb-1">Relatórios</h2>
+                                    <p class="text-secondary small mb-0">Resumo de leads, tráfego e eventos do portal.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="card admin-card admin-analytics-card">
                             <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+                                    <div>
+                                        <h2 class="h5 mb-1">Funil de Cortes</h2>
+                                        <p class="text-secondary small mb-0">Acompanhe a conversão e a retenção diária.</p>
+                                    </div>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-12 col-xl-6">
+                                        <h3 class="h6 mb-2">Funil de conversão</h3>
+                                        <div class="chart-shell">
+                                            <canvas id="funnelChart"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-6">
+                                        <h3 class="h6 mb-2">Corte (últimos 7 dias)</h3>
+                                        <div class="chart-shell">
+                                            <canvas id="cohortChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-1 g-3">
+                    <div class="col-12 col-xl-5">
+                        <div class="card admin-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h2 class="h5 mb-0">Leads capturados</h2>
                                     <div class="d-flex gap-2">
-                                        <button class="btn btn-outline-light btn-sm" type="button"
-                                            id="leadDeleteAll">Excluir todos</button>
+                                        <button class="btn btn-outline-light btn-sm" type="button" id="leadDeleteAll">Excluir todos</button>
                                     </div>
                                 </div>
                                 <div id="leadList" class="lead-list"></div>
@@ -173,24 +250,31 @@
                         </div>
                     </div>
                     <div class="col-12 col-xl-7">
-                        <div class="card admin-card h-100">
+                        <div class="card admin-card">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h2 class="h5 mb-0">Eventos de trafego</h2>
-                                    <button class="btn btn-outline-light btn-sm" type="button"
-                                        id="eventDeleteAll">Excluir todos</button>
+                                    <h2 class="h5 mb-0">Eventos de tráfego</h2>
+                                    <button class="btn btn-outline-light btn-sm" type="button" id="eventDeleteAll">Excluir todos</button>
                                 </div>
-                                <div class="d-flex flex-wrap gap-2 mb-3">
+                                <div class="d-flex flex-wrap gap-2 mb-2">
                                     <div class="badge text-bg-warning">Visitas: <span id="visitCount">0</span></div>
-                                    <div class="badge text-bg-secondary">Android: <span id="deviceAndroid">0</span>
-                                    </div>
+                                    <div class="badge text-bg-secondary">Android: <span id="deviceAndroid">0</span></div>
                                     <div class="badge text-bg-secondary">iOS: <span id="deviceIos">0</span></div>
                                     <div class="badge text-bg-secondary">PC: <span id="devicePc">0</span></div>
+                                    <div class="badge text-bg-secondary">Únicos hoje: <span id="uniqueVisitors">0</span></div>
+                                    <div class="badge text-bg-secondary">Sessões hoje: <span id="sessionCount">0</span></div>
+                                    <div class="badge text-bg-secondary">Bounce: <span id="bounceRate">0%</span></div>
+                                    <div class="badge text-bg-secondary">Tempo médio: <span id="avgTimeOnPage">0s</span></div>
+                                </div>
+                                <div class="d-flex flex-wrap gap-2 mb-2">
+                                    <div class="badge text-bg-secondary">Funil - PageView: <span id="funnelPageView">0</span></div>
+                                    <div class="badge text-bg-secondary">View Item: <span id="funnelViewItem">0</span></div>
+                                    <div class="badge text-bg-secondary">Checkout: <span id="funnelCheckout">0</span></div>
+                                    <div class="badge text-bg-secondary">Purchase: <span id="funnelPurchase">0</span></div>
                                 </div>
                                 <div class="row g-2 mb-3">
                                     <div class="col-md-4">
-                                        <input class="form-control admin-input" id="eventFilterName"
-                                            placeholder="Filtrar evento (ex.: page_view)" />
+                                        <input class="form-control admin-input" id="eventFilterName" placeholder="Filtrar evento (ex.: Visita na página)" />
                                     </div>
                                     <div class="col-md-3">
                                         <select class="form-select admin-input" id="eventFilterType">
@@ -198,7 +282,9 @@
                                             <option value="site">Site</option>
                                             <option value="product">Produto</option>
                                             <option value="service">Serviço</option>
-                                            <option value="promotion">Promocao</option>
+                                            <option value="promotion">Promoção</option>
+                                            <option value="bundle">Carrinho</option>
+                                            <option value="order">Pedido</option>
                                         </select>
                                     </div>
                                     <div class="col-md-3">
@@ -210,8 +296,7 @@
                                         </select>
                                     </div>
                                     <div class="col-md-2">
-                                        <button class="btn btn-outline-light w-100" id="eventFilterClear"
-                                            type="button">Limpar</button>
+                                        <button class="btn btn-outline-light w-100" id="eventFilterClear" type="button">Limpar</button>
                                     </div>
                                 </div>
                                 <div class="table-responsive">
@@ -234,8 +319,16 @@
                     </div>
                 </div>
             </div>
-
             <div class="tab-pane fade" id="settings" role="tabpanel" tabindex="0">
+                <div class="card admin-card admin-tab-header mb-4">
+                    <div
+                        class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                        <div>
+                            <h2 class="h5 mb-1">Configurações</h2>
+                            <p class="text-secondary small mb-0">Ajuste textos, cores, integrações e pagamentos.</p>
+                        </div>
+                    </div>
+                </div>
                 <div class="card admin-card">
                     <div class="card-body">
                         <h2 class="h5 mb-3">Configurações do portal</h2>
@@ -259,15 +352,15 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <input class="form-control admin-input" name="promoSectionTitle"
-                                                    placeholder="Titulo da secao de promocoes" />
+                                                    placeholder="Título da seção de promoções" />
                                             </div>
                                             <div class="col-12">
                                                 <input class="form-control admin-input" name="heroTitle"
-                                                    placeholder="Titulo principal" />
+                                                    placeholder="Título principal" />
                                             </div>
                                             <div class="col-12">
                                                 <input class="form-control admin-input" name="heroSubtitle"
-                                                    placeholder="Subtitulo principal" />
+                                                    placeholder="Subtítulo principal" />
                                             </div>
                                         </div>
                                     </div>
@@ -280,11 +373,11 @@
                                         <div class="row g-3">
                                             <div class="col-md-6">
                                                 <input class="form-control admin-input" name="promoBandTitle"
-                                                    placeholder="Titulo da faixa de destaque" />
+                                                    placeholder="Título da faixa de destaque" />
                                             </div>
                                             <div class="col-md-6">
                                                 <input class="form-control admin-input" name="promoBandSubtitle"
-                                                    placeholder="Subtitulo da faixa de destaque" />
+                                                    placeholder="Subtítulo da faixa de destaque" />
                                             </div>
                                             <div class="col-md-6">
                                                 <input class="form-control admin-input" name="promoBandCtaLabel"
@@ -460,7 +553,7 @@
                             <div class="col-12">
                                 <div class="card admin-card">
                                     <div class="card-body">
-                                        <h3 class="h6 mb-3">Pixel de trafego</h3>
+                                        <h3 class="h6 mb-3">Pixel de tráfego</h3>
                                         <div class="row g-3">
                                             <div class="col-md-6">
                                                 <input class="form-control admin-input" name="pixelId"
@@ -484,7 +577,7 @@
                                 </div>
                             </div>
                             <div class="col-12">
-                                <button class="btn btn-warning fw-semibold" type="submit">Salvar configuracoes</button>
+                                <button class="btn btn-warning fw-semibold" type="submit">Salvar configurações</button>
                                 <div id="adminStatus" class="admin-status" role="status"></div>
                             </div>
                         </form>
@@ -509,7 +602,7 @@
                             <select class="form-select admin-input" name="type" required>
                                 <option value="">Tipo</option>
                                 <option value="product">Produto</option>
-                                <option value="service">Serviço</option>
+                                <option value="service">Servio</option>
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -581,7 +674,7 @@
                         <input type="hidden" name="id" />
                         <input type="hidden" name="bannerUrl" />
                         <div class="col-md-6">
-                            <input class="form-control admin-input" name="title" placeholder="Titulo" required />
+                            <input class="form-control admin-input" name="title" placeholder="Título" required />
                         </div>
                         <div class="col-md-6">
                             <input class="form-control admin-input" name="promoPrice" type="number" step="0.01"
@@ -591,7 +684,7 @@
                             <select class="form-select admin-input" name="targetType" required>
                                 <option value="">Selecione o Tipo</option>
                                 <option value="product">Produto</option>
-                                <option value="service">Servico</option>
+                                <option value="service">Serviço</option>
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -608,7 +701,7 @@
                         <div class="col-md-6">
                             <label class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" name="active" checked />
-                                <span class="form-check-label text-white">Promocao ativa</span>
+                                <span class="form-check-label text-white">Promoção ativa</span>
                             </label>
                         </div>
                         <div class="col-md-6">
@@ -631,7 +724,7 @@
                                 WEBP.</div>
                         </div>
                         <div class="col-12 d-flex gap-2">
-                            <button class="btn btn-warning fw-semibold" type="submit">Salvar promocao</button>
+                            <button class="btn btn-warning fw-semibold" type="submit">Salvar promoção</button>
                             <button class="btn btn-outline-light" type="button" id="promotionReset">Limpar</button>
                         </div>
                         <div id="promotionStatus" class="admin-status" role="status"></div>
@@ -655,6 +748,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/axios@1.7.2/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="/shared/js/nav.js"></script>
     <script src="/admin/controllers/admin.js"></script>
 </body>
 

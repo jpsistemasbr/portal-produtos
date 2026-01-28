@@ -158,6 +158,17 @@ export async function applySchemaUpdates() {
       "device",
       "VARCHAR(255) NOT NULL DEFAULT 'unknown'"
     );
+    await ensureColumn("events", "clientId", "VARCHAR(255)");
+    await ensureColumn("events", "pagePath", "VARCHAR(255)");
+    await ensureColumn("events", "sessionId", "VARCHAR(255)");
+    await ensureColumn("events", "referrer", "VARCHAR(255)");
+    await ensureColumn("events", "utmSource", "VARCHAR(255)");
+    await ensureColumn("events", "utmMedium", "VARCHAR(255)");
+    await ensureColumn("events", "utmCampaign", "VARCHAR(255)");
+    await ensureColumn("events", "utmContent", "VARCHAR(255)");
+    await ensureColumn("events", "utmTerm", "VARCHAR(255)");
+    await ensureColumn("events", "durationMs", "INTEGER");
+    await ensureColumn("events", "isBot", "BOOLEAN NOT NULL DEFAULT 0");
   }
 
   if (!(await tableExists("portal_config"))) {

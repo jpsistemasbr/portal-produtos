@@ -1,4 +1,5 @@
 import { PortalConfig } from "../models/index.js";
+import { removeUploadFile } from "../utils/fileUtils.js";
 
 function sanitizePublicConfig(config) {
   const data = config.get({ plain: true });
@@ -42,6 +43,10 @@ export async function updatePortalConfig(req, res) {
     delete data.adminPasswordHash;
     return res.json(data);
   }
+  const previousPixQr = config.pixQrUrl;
+  const hadPixQrChange =
+    Object.prototype.hasOwnProperty.call(payload, "pixQrUrl") &&
+    payload.pixQrUrl !== previousPixQr;
   await config.update({
     brandLabel: payload.brandLabel ?? config.brandLabel,
     portalName: payload.portalName ?? config.portalName,
@@ -76,6 +81,9 @@ export async function updatePortalConfig(req, res) {
     pixQrUrl: payload.pixQrUrl ?? config.pixQrUrl,
     mpCheckIntervalMinutes: payload.mpCheckIntervalMinutes ?? config.mpCheckIntervalMinutes
   });
+  if (hadPixQrChange) {
+    removeUploadFile(previousPixQr);
+  }
   if (payload.adminPassword) {
     const bcrypt = (await import("bcryptjs")).default;
     const hash = await bcrypt.hash(String(payload.adminPassword), 10);
