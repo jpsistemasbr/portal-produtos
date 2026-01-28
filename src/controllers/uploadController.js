@@ -38,10 +38,16 @@ export async function handleUpload(req, res) {
     const parsed = path.parse(req.file.filename);
     const webpName = `${parsed.name}.webp`;
     const webpPath = path.join(uploadsDir, webpName);
-    await sharp(req.file.path).webp({ quality: 82 }).toFile(webpPath);
-    await fs.promises.unlink(req.file.path).catch(() => {});
-    const url = `/uploads/${webpName}`;
-    res.json({ url });
+    try {
+      await sharp(req.file.path).webp({ quality: 82 }).toFile(webpPath);
+      await fs.promises.unlink(req.file.path).catch(() => {});
+      const url = `/uploads/${webpName}`;
+      return res.json({ url });
+    } catch (err) {
+      // Fallback: keep original file if sharp/libvips is unavailable in production.
+      const url = `/uploads/${req.file.filename}`;
+      return res.json({ url, warning: "webp_unavailable" });
+    }
   } catch (err) {
     res.status(500).json({ error: "upload_failed" });
   }
