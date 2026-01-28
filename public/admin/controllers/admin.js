@@ -46,6 +46,24 @@ const adminStatus = document.getElementById("adminStatus");
 const itemStatus = document.getElementById("itemStatus");
 const promotionStatus = document.getElementById("promotionStatus");
 
+function logAxiosError(context, err) {
+  const status = err?.response?.status;
+  const data = err?.response?.data;
+  console.error(`[admin] ${context}`, {
+    status,
+    data,
+    message: err?.message
+  });
+}
+
+window.addEventListener("error", (event) => {
+  console.error("[admin] window error", event?.error || event?.message);
+});
+
+window.addEventListener("unhandledrejection", (event) => {
+  console.error("[admin] unhandled rejection", event?.reason);
+});
+
 const adminToken = localStorage.getItem(tokenKey);
 if (!adminToken) {
   window.location.href = "/admin-login";
@@ -584,6 +602,7 @@ if (promotionForm) {
         if (promotionModalInstance) promotionModalInstance.hide();
       }, 600);
     } catch (err) {
+      logAxiosError("salvar promocao", err);
       setStatus(promotionStatus, "Nao foi possivel salvar a promocao.", "error");
       setStatus(adminStatus, "Nao foi possivel salvar a promocao.", "error");
     }
@@ -643,6 +662,7 @@ if (itemForm) {
         closeModal();
       }, 600);
     } catch (err) {
+      logAxiosError("salvar item", err);
       setStatus(itemStatus, "Nao foi possivel salvar o item.", "error");
       setStatus(adminStatus, "Nao foi possivel salvar o item.", "error");
     }
@@ -732,6 +752,8 @@ promotionList.addEventListener("click", (event) => {
         promotionForm.elements.bannerUrl.value = promo.bannerUrl || "";
       }
       if (promotionModalInstance) promotionModalInstance.show();
+    }).catch((err) => {
+      logAxiosError("carregar promocao", err);
     });
   }
 });
@@ -1076,6 +1098,7 @@ if (configForm) {
       }
       setStatus(adminStatus, "Configuracoes salvas com sucesso.", "success");
     } catch (err) {
+      logAxiosError("salvar configuracoes", err);
       setStatus(adminStatus, "Nao foi possivel salvar as configuracoes.", "error");
     }
   });

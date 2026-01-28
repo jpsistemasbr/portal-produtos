@@ -114,6 +114,10 @@ app.get("/api/health", (_req, res) => {
 app.use("/api", apiRoutes);
 
 app.use((err, _req, res, _next) => {
+  console.error("[api] internal_error", {
+    message: err?.message,
+    stack: err?.stack
+  });
   res.status(500).json({ error: "internal_error" });
 });
 

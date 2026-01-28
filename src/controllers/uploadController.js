@@ -49,6 +49,7 @@ export async function handleUpload(req, res) {
       return res.json({ url, warning: "webp_unavailable" });
     }
   } catch (err) {
+    console.error("[upload] failed", { message: err?.message, stack: err?.stack });
     res.status(500).json({ error: "upload_failed" });
   }
 }
