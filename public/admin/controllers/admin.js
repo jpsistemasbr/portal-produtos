@@ -52,6 +52,7 @@ if (!adminToken) {
 }
 if (window.axios && adminToken) {
   axios.defaults.headers.common.Authorization = `Bearer ${adminToken}`;
+  axios.defaults.headers.common["X-Admin-Token"] = adminToken;
   axios.interceptors.response.use(
     (response) => response,
     (error) => {

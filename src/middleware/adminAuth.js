@@ -6,7 +6,12 @@ function getJwtSecret() {
 
 export function requireAdmin(req, res, next) {
   const auth = req.headers.authorization || "";
-  const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+  const headerToken = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+  const altHeaderToken = req.headers["x-admin-token"] || req.headers["x-access-token"];
+  const token =
+    headerToken ||
+    (typeof altHeaderToken === "string" ? altHeaderToken : "") ||
+    String(req.query.token || "");
   if (!token) {
     return res.status(401).json({ error: "unauthorized" });
   }
