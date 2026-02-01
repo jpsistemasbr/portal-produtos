@@ -14,6 +14,7 @@ const twitterTitle = document.getElementById("twitterTitle");
 const twitterDescription = document.getElementById("twitterDescription");
 const seoSchema = document.getElementById("seoSchema");
 let portalConfig = null;
+let statusApplied = false;
 
 function trackPixel(name, payload) {
   if (window.trackPixelEvent) {
@@ -243,9 +244,11 @@ async function loadPortalConfig() {
       window.location.href = "/";
       return;
     }
-    if (successTitle) successTitle.textContent = data?.successTitle || "Status do pagamento";
-    if (successMessage) {
-      successMessage.textContent = data?.successMessage || "Acompanhe abaixo o status da sua compra.";
+    if (!statusApplied) {
+      if (successTitle) successTitle.textContent = data?.successTitle || "Status do pagamento";
+      if (successMessage) {
+        successMessage.textContent = data?.successMessage || "Acompanhe abaixo o status da sua compra.";
+      }
     }
     const supportParts = [];
     if (data?.supportEmail) supportParts.push(`Email: ${data.supportEmail}`);
@@ -319,6 +322,7 @@ async function loadItem() {
   const copy = statusCopy[normalized] || statusCopy.pending;
   if (successTitle) successTitle.textContent = copy.title;
   if (successMessage) successMessage.textContent = copy.message;
+  statusApplied = true;
   if (portalConfig?.portalName) {
     document.title = `${portalConfig.portalName} - ${copy.title}`;
     updateSeoTags({ title: document.title, description: copy.message });
