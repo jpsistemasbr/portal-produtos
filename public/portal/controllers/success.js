@@ -302,14 +302,26 @@ async function loadItem() {
   if (normalized === "approved") statusLabel = "Pagamento aprovado.";
   if (normalized === "failed") statusLabel = "Pagamento nao aprovado.";
 
-  if (successTitle) {
-    successTitle.textContent = normalized === "approved" ? "Obrigado pela compra" : "Status do pagamento";
-  }
-  if (successMessage) {
-    successMessage.textContent =
-      normalized === "approved"
-        ? "Seu pagamento foi aprovado e seu pedido esta confirmado."
-        : "Acompanhe abaixo o status da sua compra.";
+  const statusCopy = {
+    approved: {
+      title: "Obrigado pela compra",
+      message: "Seu pagamento foi aprovado e seu pedido esta confirmado."
+    },
+    pending: {
+      title: "Pagamento em analise",
+      message: "Seu pagamento esta em analise. Acompanhe abaixo o status da sua compra."
+    },
+    failed: {
+      title: "Pagamento nao aprovado",
+      message: "Seu pagamento nao foi aprovado. Tente novamente ou escolha outra forma de pagamento."
+    }
+  };
+  const copy = statusCopy[normalized] || statusCopy.pending;
+  if (successTitle) successTitle.textContent = copy.title;
+  if (successMessage) successMessage.textContent = copy.message;
+  if (portalConfig?.portalName) {
+    document.title = `${portalConfig.portalName} - ${copy.title}`;
+    updateSeoTags({ title: document.title, description: copy.message });
   }
 
   const methodLabel =

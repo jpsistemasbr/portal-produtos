@@ -242,8 +242,7 @@ async function requestJson(url) {
 
 function buildCard(item, typeLabel) {
   const hasPromo = item.promotion && item.promotion.promoPrice && item.promotion.active;
-  const label = typeLabel === "product" ? "Produto" : "Serviço";
-  const pill = hasPromo ? item.promotion.title : label;
+  const pill = hasPromo ? `<span class="pill">${item.promotion.title}</span>` : "";
   const link =
     typeLabel === "product"
       ? `/item/produto/${item.id}`
@@ -264,7 +263,7 @@ function buildCard(item, typeLabel) {
     <article class="card catalog-card" data-id="${item.id}" data-type="${typeLabel}">
       <div class="card-media">
         <img src="${item.imageUrl}" alt="${item.name}" />
-        <span class="pill">${pill}</span>
+        ${pill}
       </div>
       <div class="card-body">
         <h3>${item.name}</h3>
