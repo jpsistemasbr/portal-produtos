@@ -9,6 +9,7 @@ import paymentRoutes from "./paymentRoutes.js";
 import portalConfigRoutes from "./portalConfigRoutes.js";
 import ordersRoutes from "./ordersRoutes.js";
 import adminAuthRoutes from "./adminAuthRoutes.js";
+import adminBackupRoutes from "./adminBackupRoutes.js";
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.use("/payments", paymentRoutes);
 router.use("/orders", ordersRoutes);
 router.use("/portal-config", portalConfigRoutes);
 router.use("/admin", adminAuthRoutes);
+router.use("/admin/backup", adminBackupRoutes);
 
 export default router;

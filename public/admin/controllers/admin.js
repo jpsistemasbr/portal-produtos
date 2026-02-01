@@ -57,6 +57,10 @@ const mpLiveAlert = document.getElementById("mpLiveAlert");
 const adminStatus = document.getElementById("adminStatus");
 const itemStatus = document.getElementById("itemStatus");
 const promotionStatus = document.getElementById("promotionStatus");
+const dbExport = document.getElementById("dbExport");
+const dbImportFile = document.getElementById("dbImportFile");
+const dbImportBtn = document.getElementById("dbImportBtn");
+const dbBackupStatus = document.getElementById("dbBackupStatus");
 
 function logAxiosError(context, err) {
   const status = err?.response?.status;
@@ -1068,6 +1072,70 @@ function setStatus(el, message, tone) {
       }
     }, 4000);
   }
+}
+
+function downloadBlob(data, filename) {
+  const blob = data instanceof Blob ? data : new Blob([data]);
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+}
+
+function parseFilename(header) {
+  if (!header) return "portal-produtos.sqlite";
+  const match = header.match(/filename\\*?=(?:UTF-8''|")?([^\";]+)/i);
+  return match ? decodeURIComponent(match[1]) : "portal-produtos.sqlite";
+}
+
+if (dbExport) {
+  dbExport.addEventListener("click", async () => {
+    try {
+      setStatus(dbBackupStatus, "Gerando backup...", "success");
+      const resp = await axios.get("/api/admin/backup/download", { responseType: "blob" });
+      const filename = parseFilename(resp.headers?.["content-disposition"]);
+      downloadBlob(resp.data, filename);
+      setStatus(dbBackupStatus, "Backup exportado com sucesso.", "success");
+    } catch (err) {
+      logAxiosError("exportar backup", err);
+      setStatus(dbBackupStatus, "Falha ao exportar backup.", "error");
+    }
+  });
+}
+
+if (dbImportBtn) {
+  dbImportBtn.addEventListener("click", async () => {
+    const file = dbImportFile?.files?.[0];
+    if (!file) {
+      setStatus(dbBackupStatus, "Selecione um arquivo .db/.sqlite.", "error");
+      return;
+    }
+    const confirmRestore = window.confirm(
+      "Tem certeza? O banco atual será substituído pelo arquivo selecionado."
+    );
+    if (!confirmRestore) return;
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      setStatus(dbBackupStatus, "Importando backup...", "success");
+      const resp = await axios.post("/api/admin/backup/restore", formData);
+      const needsRestart = resp?.data?.restartRequired;
+      setStatus(
+        dbBackupStatus,
+        needsRestart
+          ? "Backup importado. Reinicie o servidor para aplicar."
+          : "Backup importado com sucesso.",
+        "success"
+      );
+    } catch (err) {
+      logAxiosError("importar backup", err);
+      setStatus(dbBackupStatus, "Falha ao importar backup.", "error");
+    }
+  });
 }
 if (leadTable) {
   leadTable.addEventListener("click", async (event) => {

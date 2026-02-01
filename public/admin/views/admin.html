@@ -577,6 +577,38 @@
                                 </div>
                             </div>
                             <div class="col-12">
+                                <div class="card admin-card">
+                                    <div class="card-body">
+                                        <h3 class="h6 mb-3">Backup do banco (SQLite)</h3>
+                                        <div class="row g-3 align-items-center">
+                                            <div class="col-md-4">
+                                                <button id="dbExport" class="btn btn-outline-light w-100"
+                                                    type="button">
+                                                    Exportar banco
+                                                </button>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <input id="dbImportFile" class="form-control admin-input" type="file"
+                                                    accept=".db,.sqlite" />
+                                            </div>
+                                            <div class="col-md-3">
+                                                <button id="dbImportBtn" class="btn btn-warning w-100" type="button">
+                                                    Importar banco
+                                                </button>
+                                            </div>
+                                            <div class="col-12">
+                                                <div id="dbBackupStatus" class="admin-status" role="status"></div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="form-text text-secondary">
+                                                    Importar substitui o banco atual. Faça backup antes.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
                                 <button class="btn btn-warning fw-semibold" type="submit">Salvar configurações</button>
                                 <div id="adminStatus" class="admin-status" role="status"></div>
                             </div>
