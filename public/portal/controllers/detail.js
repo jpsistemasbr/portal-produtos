@@ -189,11 +189,18 @@ function getYoutubeId(url) {
   if (!url) return null;
   try {
     const parsed = new URL(url);
-    if (parsed.hostname.includes("youtu.be")) {
-      return parsed.pathname.replace("/", "");
+    const host = parsed.hostname.toLowerCase();
+    if (host.includes("youtu.be")) {
+      const parts = parsed.pathname.split("/").filter(Boolean);
+      return parts[0] || null;
     }
-    if (parsed.hostname.includes("youtube.com")) {
-      return parsed.searchParams.get("v");
+    if (host.includes("youtube.com") || host.includes("youtube-nocookie.com")) {
+      const vParam = parsed.searchParams.get("v");
+      if (vParam) return vParam;
+      const parts = parsed.pathname.split("/").filter(Boolean);
+      if (parts[0] === "shorts" || parts[0] === "embed" || parts[0] === "live") {
+        return parts[1] || null;
+      }
     }
     return null;
   } catch {
@@ -356,12 +363,45 @@ async function loadItem() {
   if (detailVideo && detailVideoFrame) {
     const youtubeId = getYoutubeId(data.linkVideo);
     if (data.linkVideo) {
-      detailVideoFrame.src = youtubeId
-        ? `https://www.youtube.com/embed/${youtubeId}`
-        : data.linkVideo;
+      const fallbackId = "detailVideoFallback";
+      let fallback = document.getElementById(fallbackId);
+      if (!fallback) {
+        fallback = document.createElement("div");
+        fallback.id = fallbackId;
+        fallback.className = "detail-video-fallback";
+        detailVideo.appendChild(fallback);
+      }
+      detailVideoFrame.setAttribute(
+        "allow",
+        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      );
+      if (youtubeId) {
+        const origin = window.location.origin || "";
+        const originParam = origin.startsWith("http") ? `&origin=${encodeURIComponent(origin)}` : "";
+        detailVideoFrame.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
+        detailVideoFrame.src = `https://www.youtube.com/embed/${youtubeId}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1${originParam}`;
+        detailVideoFrame.style.display = "block";
+        fallback.innerHTML = "";
+        fallback.style.display = "none";
+      } else {
+        detailVideoFrame.src = "";
+        detailVideoFrame.style.display = "none";
+        fallback.innerHTML = `
+          <a class="btn ghost" href="${data.linkVideo}" target="_blank" rel="noopener">
+            Assistir o video
+          </a>
+        `;
+        fallback.style.display = "block";
+      }
       detailVideo.style.display = "block";
     } else {
       detailVideoFrame.src = "";
+      detailVideoFrame.style.display = "none";
+      const fallback = document.getElementById("detailVideoFallback");
+      if (fallback) {
+        fallback.innerHTML = "";
+        fallback.style.display = "none";
+      }
       detailVideo.style.display = "none";
     }
   }

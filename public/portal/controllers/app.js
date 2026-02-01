@@ -298,7 +298,7 @@ function buildPromoBanner(item, typeLabel) {
     : "";
 
   return `
-    <article class="promo-banner card" data-id="${promo.id}" data-type="promotion">
+    <article class="promo-banner card" data-id="${item.id}" data-type="${typeLabel}">
       <div class="card-media">
         <img src="${promo.bannerUrl}" alt="${promo.title}" />
         <span class="pill">${promo.title}</span>
